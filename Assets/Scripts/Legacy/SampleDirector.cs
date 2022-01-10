@@ -10,7 +10,7 @@ public class SampleDirector : MonoBehaviour
     public int targetDegree;
     public float maxSpeed;
     
-    private RobotController _pRobotControl;
+    private LagacyRobotController _pLagacyRobotControl;
     private int _nTargetStep;
     private int _nCurrentStep;
     private RotationDirection _eCurrentDir;
@@ -19,7 +19,7 @@ public class SampleDirector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _pRobotControl = robot.GetComponent<RobotController>();
+        _pLagacyRobotControl = robot.GetComponent<LagacyRobotController>();
         _nTargetStep = (int) (targetDegree / (maxSpeed * Time.fixedDeltaTime));
         _nCurrentStep = 0;
         _eCurrentDir = targetDegree == 0
@@ -42,7 +42,7 @@ public class SampleDirector : MonoBehaviour
 
     void RotateJoint(int nAxis)
     {
-        if (nAxis < 0 || nAxis >= _pRobotControl.joints.Length)
+        if (nAxis < 0 || nAxis >= _pLagacyRobotControl.joints.Length)
             return;
         _nCurrentStep += _eCurrentDir == RotationDirection.Positive ? 1 : -1;
         // Rotate the joint according to the rules
@@ -62,18 +62,18 @@ public class SampleDirector : MonoBehaviour
                 fSpeed = Hemisphere(_nCurrentStep, _nTargetStep, maxSpeed);
                 break;
         }
-        _pRobotControl.RotateJoint(nAxis, _eCurrentDir, fSpeed);
+        _pLagacyRobotControl.RotateJoint(nAxis, _eCurrentDir, fSpeed);
         Debug.Log($"Step={_nCurrentStep}, Degree={_nCurrentStep / (fSpeed * Time.fixedDeltaTime)}, Speed={fSpeed}");
         // Check the end frame
         if (_nCurrentStep == _nTargetStep)
-            _pRobotControl.RotateJoint(nAxis, RotationDirection.None);
+            _pLagacyRobotControl.RotateJoint(nAxis, RotationDirection.None);
     }
 
     void RotateJoint(string strAxis)
     {
-        for (int i = 0; i < _pRobotControl.joints.Length; i++)
+        for (int i = 0; i < _pLagacyRobotControl.joints.Length; i++)
         {
-            if (selectedAxis != _pRobotControl.joints[i].inputAxis) continue;
+            if (selectedAxis != _pLagacyRobotControl.joints[i].inputAxis) continue;
             RotateJoint(i);
             return;
         }
