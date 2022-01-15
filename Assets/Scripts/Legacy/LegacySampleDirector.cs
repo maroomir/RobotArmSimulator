@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class SampleDirector : MonoBehaviour
+public class LegacySampleDirector : MonoBehaviour
 {
     public enum SpeedRule { None = 0, Triangle, Trapezoid, Hemisphere}
     
