@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IMathematicalSpeedControl
+public interface ISpeedControl
 {
-    public int MaxStep { get; }
+    public int MaxStep { get; set; }
     public float MaxSpeed { get; set; }
     
     public void SetPosition(float fStartPos, float fTargetPos);
@@ -11,15 +11,33 @@ public interface IMathematicalSpeedControl
     public float GetPosition(int iX);
 }
 
-public class NormalControl : IMathematicalSpeedControl
+public class NormalControl : ISpeedControl
 {
-    public int MaxStep => (int) (_fPositionDelta / RealMaxSpeed());
+    public int MaxStep
+    {
+        get => _nMaxStep;
+        set
+        {
+            _nMaxStep = value;
+            _fMaxSpeed = _fPositionDelta / _nMaxStep;
+        }
+    }
 
-    public float MaxSpeed { get; set; } = 100.0F;
+    public float MaxSpeed
+    {
+        get => _nMoveDir * _fMaxSpeed/ _fDeltaFrame;
+        set
+        {
+            _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
+            _nMaxStep = (int) (_nMoveDir * _fPositionDelta / _fMaxSpeed);
+        }
+    }
 
     private readonly float _fDeltaFrame;
     private float _fStartPosition = 0.0F;
     private float _fPositionDelta = 0.0F;
+    private int _nMaxStep = 20;
+    private float _fMaxSpeed = 2.0F;
     private int _nMoveDir = 1;
 
     public NormalControl(float fDelta)
@@ -27,14 +45,9 @@ public class NormalControl : IMathematicalSpeedControl
         _fDeltaFrame = fDelta;
     }
 
-    private float RealMaxSpeed()
-    {
-        return _nMoveDir * MaxSpeed * _fDeltaFrame;
-    }
-
     public float GetPosition(int iX)
     {
-        if (iX > MaxStep) iX = MaxStep;
+        if (iX > _nMaxStep) iX = _nMaxStep;
         return _fStartPosition + GetSpeed(iX) * iX;
     }
 
@@ -47,22 +60,40 @@ public class NormalControl : IMathematicalSpeedControl
 
     public float GetSpeed(int iX)
     {
-        return RealMaxSpeed();
+        return _fMaxSpeed;
     }
 }
 
-public class TrapezoidControl : IMathematicalSpeedControl
+public class TrapezoidControl : ISpeedControl
 {
-    public int MaxStep =>
-        (int) (_fPositionDelta / RealMaxSpeed() / (0.5F + 0.5F * _fRegularRatio));
+    public int MaxStep
+    {
+        get => _nMaxStep;
+        set
+        {
+            _nMaxStep = value;
+            _fMaxSpeed = 2 * _fPositionDelta / (_fRegularRatio + 1) / _nMaxStep;
+        }
+    }
 
-    public float MaxSpeed { get; set; } = 100.0F;
+    public float MaxSpeed
+    {
+        get => _nMoveDir * _fMaxSpeed / _fDeltaFrame;
+        set
+        {
+            _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
+            _nMaxStep = (int) (2 * _fPositionDelta / (_fRegularRatio + 1) / _fMaxSpeed);
+        }
+
+    }
 
     private readonly float _fDeltaFrame;
     private readonly float _fRegularRatio;
     private float _fStartPostion = 0.0F;
     private float _fTargetPostion = 0.0F;
     private float _fPositionDelta = 0.0F;
+    private int _nMaxStep = 20;
+    private float _fMaxSpeed = 2.0F;
     private int _nMoveDir = 1;
 
     public TrapezoidControl(float fDelta, float fRegularRatio = 0.5F)
@@ -71,23 +102,18 @@ public class TrapezoidControl : IMathematicalSpeedControl
         _fRegularRatio = fRegularRatio;
     }
 
-    private float RealMaxSpeed()
-    {
-        return _nMoveDir * MaxSpeed * _fDeltaFrame;
-    }
-
     public float GetPosition(int iX)
     {
-        if (iX > MaxStep) iX = MaxStep - 1;
-        int nSlantedCount = (int) ((1 - _fRegularRatio) * MaxStep / 2);
+        if (iX > _nMaxStep) iX = _nMaxStep - 1;
+        int nSlantedCount = (int) ((1 - _fRegularRatio) * _nMaxStep / 2);
         if (0 <= iX && iX < nSlantedCount)
             return _fStartPostion + GetSpeed(iX) * iX * 0.5F;
-        if (nSlantedCount <= iX && iX < MaxStep - nSlantedCount)
-            return _fStartPostion + RealMaxSpeed() * (iX - 0.5F * nSlantedCount);
-        if (MaxStep - nSlantedCount <= iX && iX <= MaxStep)
+        if (nSlantedCount <= iX && iX < _nMaxStep - nSlantedCount)
+            return _fStartPostion + _fMaxSpeed * (iX - 0.5F * nSlantedCount);
+        if (_nMaxStep - nSlantedCount <= iX && iX <= _nMaxStep)
             return _fStartPostion
-                   + RealMaxSpeed() * (MaxStep - 1.5F * nSlantedCount)
-                   + (RealMaxSpeed() + GetSpeed(iX)) * (iX - MaxStep + nSlantedCount) * 0.5F;
+                   + _fMaxSpeed * (_nMaxStep - 1.5F * nSlantedCount)
+                   + (_fMaxSpeed + GetSpeed(iX)) * (iX - _nMaxStep + nSlantedCount) * 0.5F;
         return _fTargetPostion;
     }
 
@@ -101,73 +127,46 @@ public class TrapezoidControl : IMathematicalSpeedControl
 
     public float GetSpeed(int iX)
     {
-        if (iX > MaxStep) iX = MaxStep - 1;
-        int nSlantedCount = (int) ((1 - _fRegularRatio) * MaxStep / 2);
+        if (iX > _nMaxStep) iX = _nMaxStep - 1;
+        int nSlantedCount = (int) ((1 - _fRegularRatio) * _nMaxStep / 2);
         if (0 <= iX && iX < nSlantedCount)
-            return RealMaxSpeed() / nSlantedCount * iX;
-        if (nSlantedCount <= iX && iX < MaxStep - nSlantedCount)
-            return RealMaxSpeed();
-        if (MaxStep - nSlantedCount <= iX && iX <= MaxStep)
-            return -RealMaxSpeed() / nSlantedCount * (iX - MaxStep);
+            return _fMaxSpeed / nSlantedCount * iX;
+        if (nSlantedCount <= iX && iX < _nMaxStep - nSlantedCount)
+            return _fMaxSpeed;
+        if (_nMaxStep - nSlantedCount <= iX && iX <= _nMaxStep)
+            return -_fMaxSpeed / nSlantedCount * (iX - _nMaxStep);
         return 0.0F;
     }
 }
 
-public class HemisphereControl : IMathematicalSpeedControl
+public class TriangleControl : ISpeedControl
 {
-    public int MaxStep => (int)(_fPositionDelta / RealMaxSpeed() * 4.0F / Mathf.PI);
-    public float MaxSpeed { get; set; } = 100.0F;
+    public int MaxStep
+    {
+        get => _nMaxStep;
+        set
+        {
+            _nMaxStep = value;
+            _fMaxSpeed = 2 * _fPositionDelta / _nMaxStep;
+        }
+    }
+
+    public float MaxSpeed
+    {
+        get => _nMoveDir * _fMaxSpeed / _fDeltaFrame;
+        set
+        {
+            _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
+            _nMaxStep = (int) (2 * _fPositionDelta / _fMaxSpeed);
+        }
+    }
 
     private readonly float _fDeltaFrame;
-    private float _fStartPostion = 0.0F;
-    private float _fPositionDelta = 0.0F;
-    private int _nMoveDir = 1;
-
-    public HemisphereControl(float fDelta)
-    {
-        _fDeltaFrame = fDelta;
-    }
-
-    private float RealMaxSpeed()
-    {
-        return _nMoveDir * MaxSpeed * _fDeltaFrame;
-    }
-    
-    public float GetPosition(int iX)
-    {
-        if (iX > MaxStep) iX = MaxStep - 1;
-        float fArea = 0.0F;
-        for (int i = 0; i < iX; i++)
-            fArea += GetSpeed(iX);
-        return _fStartPostion + fArea;
-    }
-    
-    public void SetPosition(float fStartPos, float fTargetPos)
-    {
-        _fStartPostion = fStartPos;
-        _fPositionDelta = fTargetPos - fStartPos;
-        _nMoveDir = (_fPositionDelta >= 0.0F) ? 1 : -1;
-    }
-
-    public float GetSpeed(int iX)
-    {
-        if (iX > MaxStep) iX = MaxStep - 1;
-        float fX0 = MaxStep / 2.0F;
-        float fA2 = MaxStep * MaxStep / 4.0F;
-        float fB2 = RealMaxSpeed() * RealMaxSpeed();
-        return _nMoveDir * Mathf.Sqrt(fB2 - fB2 / fA2 * (iX - fX0) * (iX - fX0));
-    }
-}
-
-public class TriangleControl : IMathematicalSpeedControl
-{
-    public int MaxStep => (int) (_fPositionDelta * 2.0F / RealMaxSpeed());
-    public float MaxSpeed { get; set; } = 100.0F;
-
-    private readonly float _fDeltaFrame;
-    private float _fStartPostion = 0.0F;
+    private float _fStartPosition = 0.0F;
     private float _fTargetPosition = 0.0F;
     private float _fPositionDelta = 0.0F;
+    private int _nMaxStep = 20;
+    private float _fMaxSpeed = 2.0F;
     private int _nMoveDir = 1;
 
     public TriangleControl(float fDelta)
@@ -175,26 +174,21 @@ public class TriangleControl : IMathematicalSpeedControl
         _fDeltaFrame = fDelta;
     }
 
-    private float RealMaxSpeed()
-    {
-        return _nMoveDir * MaxSpeed * _fDeltaFrame;
-    }
-
     public float GetPosition(int iX)
     {
-        if (iX > MaxStep) iX = MaxStep - 1;
-        if (0 <= iX && iX < MaxStep / 2)
-            return _fStartPostion + GetSpeed(iX) * iX * 0.5F;
-        if (MaxStep / 2 <= iX && iX <= MaxStep)
-            return _fStartPostion
-                   + 0.25F * RealMaxSpeed() * MaxStep
-                   + 0.5F * (GetSpeed(iX) + RealMaxSpeed()) * (iX - 0.5F * MaxStep);
+        if (iX > _nMaxStep) iX = _nMaxStep - 1;
+        if (0 <= iX && iX < _nMaxStep / 2)
+            return _fStartPosition + GetSpeed(iX) * iX * 0.5F;
+        if (_nMaxStep / 2 <= iX && iX <= _nMaxStep)
+            return _fStartPosition
+                   + 0.25F * _fMaxSpeed * _nMaxStep
+                   + 0.5F * (GetSpeed(iX) + _fMaxSpeed) * (iX - 0.5F * _nMaxStep);
         return _fTargetPosition;
     }
 
     public void SetPosition(float fStartPos, float fTargetPos)
     {
-        _fStartPostion = fStartPos;
+        _fStartPosition = fStartPos;
         _fTargetPosition = fTargetPos;
         _fPositionDelta = fTargetPos - fStartPos;
         _nMoveDir = (_fPositionDelta >= 0.0F) ? 1 : -1;
@@ -202,10 +196,10 @@ public class TriangleControl : IMathematicalSpeedControl
 
     public float GetSpeed(int iX)
     {
-        if (0 <= iX && iX < MaxStep / 2)
-            return 2 * RealMaxSpeed() * iX / MaxStep;
-        if (MaxStep / 2 <= iX && iX <= MaxStep)
-            return 2 * RealMaxSpeed() - 2 * RealMaxSpeed() * iX / MaxStep;
+        if (0 <= iX && iX < _nMaxStep / 2)
+            return 2 * _fMaxSpeed * iX / _nMaxStep;
+        if (_nMaxStep / 2 <= iX && iX <= _nMaxStep)
+            return 2 * _fMaxSpeed - 2 * _fMaxSpeed * iX / _nMaxStep;
         return 0.0F;
     }
 }

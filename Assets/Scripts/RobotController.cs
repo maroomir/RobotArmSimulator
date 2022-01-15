@@ -44,10 +44,11 @@ public class RobotController : MonoBehaviour
 
     private void OnJointMoveEvent(object sender, JointEventArgs e)
     {
-        if(!IsRobotActivate) IsRobotActivate = true;
+        if (!IsRobotActivate) IsRobotActivate = true;
         JointController pObject = (JointController) sender;
         _pJointStatusFlags[pObject.Index] = true;
-        Debug.Log($"[MOVE] Joint={pObject.Name} InputPos={e.TargetPosition} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
+        Debug.Log(
+            $"[MOVE] Joint={pObject.Name} InputPos={e.TargetPosition} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
 
     private void OnJointStopEvent(object sender, JointEventArgs e)
@@ -57,7 +58,22 @@ public class RobotController : MonoBehaviour
         Debug.Log($"[STOP] Joint={pObject.Name} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
 
-    public IEnumerator MoveAbsoluteJoint(params float[] pTargetPositions)
+    public IEnumerator MoveAbsoluteJoints(params float[] pTargetPositions)
+    {
+        yield return StartCoroutine(RotateJoints(pTargetPositions, 200.0F));
+    }
+
+    public IEnumerator MoveAbsoluteJoints(JointPosition pTargetPosition)
+    {
+        yield return pTargetPosition.SyncMode switch
+        {
+            SyncRule.SpeedSync => StartCoroutine(RotateJoints(pTargetPosition.Position, pTargetPosition.MaxSpeed)),
+            SyncRule.StepSync => StartCoroutine(RotateJoints(pTargetPosition.Position, pTargetPosition.MaxStep)),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private IEnumerator RotateJoints(float[] pTargetPositions, float fSpeed, SpeedRule eMode = SpeedRule.Trapezoid)
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
@@ -69,9 +85,38 @@ public class RobotController : MonoBehaviour
             if (pJoint == null) continue;
             pJoint.Index = i;
             pJoint.Name = joints[i].inputAxis;
+            pJoint.SyncMode = SyncRule.SpeedSync;
+            pJoint.SpeedMode = eMode;
             pJoint.OnJointMoveEvent += OnJointMoveEvent;
             pJoint.OnJointStopEvent += OnJointStopEvent;
-            pJoint.MaxSpeed = 100.0F;
+            pJoint.MaxSpeed = fSpeed;
+            pJoint.TargetPosition = pTargetPositions[i];
+            pJoint.UpdateParameter();
+        }
+
+        yield return new WaitUntil(() => IsRobotActivate);
+        yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
+        ExitRobot();
+        Debug.Log("Exit the absolute move");
+    }
+
+    private IEnumerator RotateJoints(float[] pTargetPositions, int nStep, SpeedRule eMode = SpeedRule.Trapezoid)
+    {
+        if (joints?.Length != pTargetPositions.Length) yield break;
+        Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
+        InitRobot();
+        for (int i = 0; i < joints.Length; i++)
+        {
+            GameObject pPart = joints[i].robotPart;
+            JointController pJoint = pPart.GetComponent<JointController>();
+            if (pJoint == null) continue;
+            pJoint.Index = i;
+            pJoint.Name = joints[i].inputAxis;
+            pJoint.SyncMode = SyncRule.StepSync;
+            pJoint.SpeedMode = eMode;
+            pJoint.OnJointMoveEvent += OnJointMoveEvent;
+            pJoint.OnJointStopEvent += OnJointStopEvent;
+            pJoint.MaxStep = nStep;
             pJoint.TargetPosition = pTargetPositions[i];
             pJoint.UpdateParameter();
         }

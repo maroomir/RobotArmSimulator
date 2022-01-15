@@ -18,20 +18,29 @@ public class JointEventArgs : EventArgs
     }
 }
 
+public enum SpeedRule
+{
+    None = 0,
+    Triangle,
+    Trapezoid,
+}
+
+public enum SyncRule
+{
+    SpeedSync=0,
+    StepSync,
+}
+
 public class JointController : MonoBehaviour
 {
-    private enum SpeedRule
-    {
-        None = 0,
-        Triangle,
-        Trapezoid,
-    }
-
     public delegate void JointMoveCallback(object sender, JointEventArgs e);
 
     public int Index { get; set; }
     public string Name { get; set; }
+    public int MaxStep { get; set; }
     public float MaxSpeed { get; set; }
+    public SpeedRule SpeedMode { get; set; } = SpeedRule.Trapezoid;
+    public SyncRule SyncMode { get; set; } = SyncRule.SpeedSync;
 
     public float CurrentPosition => (_pArticulation == null) ? 0.0F : Mathf.Rad2Deg * _pArticulation.jointPosition[0];
 
@@ -39,10 +48,7 @@ public class JointController : MonoBehaviour
 
     private ArticulationBody _pArticulation;
     private int _nCurrStep = 0;
-    private int _nPlanStep = 0;
-    private readonly float _fMinimumSpeed = 1.0F;
-    private readonly SpeedRule _eSpeedControl = SpeedRule.Triangle;
-    private IMathematicalSpeedControl _pSpeedController;
+    private ISpeedControl _pSpeedController;
 
     public event JointMoveCallback OnJointMoveEvent;
     public event JointMoveCallback OnJointStopEvent;
@@ -51,7 +57,7 @@ public class JointController : MonoBehaviour
     private void Start()
     {
         _pArticulation = GetComponent<ArticulationBody>();
-        _pSpeedController = _eSpeedControl switch
+        _pSpeedController = SpeedMode switch
         {
             SpeedRule.None => new NormalControl(Time.fixedDeltaTime),
             SpeedRule.Trapezoid => new TrapezoidControl(Time.fixedDeltaTime),
@@ -64,18 +70,29 @@ public class JointController : MonoBehaviour
 
     public void UpdateParameter()
     {
-        if (MaxSpeed == 0) MaxSpeed = _fMinimumSpeed;
         _nCurrStep = 0;
         if (_pSpeedController == null) return;
-        _pSpeedController.MaxSpeed = MaxSpeed;
-        _pSpeedController.SetPosition(CurrentPosition, TargetPosition);
-        _nPlanStep = _pSpeedController.MaxStep;
+        switch (SyncMode)
+        {
+            case SyncRule.SpeedSync:
+                _pSpeedController.SetPosition(CurrentPosition, TargetPosition);
+                _pSpeedController.MaxSpeed = MaxSpeed;
+                MaxStep = _pSpeedController.MaxStep;
+                break;
+            case SyncRule.StepSync:
+                _pSpeedController.SetPosition(CurrentPosition, TargetPosition);
+                _pSpeedController.MaxStep = MaxStep;
+                MaxSpeed = _pSpeedController.MaxSpeed;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     // Update is called on fixed frequency
     private void FixedUpdate()
     {
-        if (_nCurrStep == _nPlanStep)
+        if (_nCurrStep == MaxStep)
         {
             OnJointStopEvent?.Invoke(this, new JointEventArgs(CurrentPosition, CurrentPosition, 0.0F));
             return;
