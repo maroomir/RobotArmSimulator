@@ -20,6 +20,24 @@ public class RobotController : MonoBehaviour
     public JointInfo[] joints;
 
     public bool IsRobotActivate { get; private set; }
+
+    public float[] CurrentPosition
+    {
+        get
+        {
+            float[] pResult = new float[joints.Length];
+            for (int i = 0; i < joints.Length; i++)
+            {
+                GameObject pPart = joints[i].robotPart;
+                JointController pJoint = pPart.GetComponent<JointController>();
+                if (pJoint == null) continue;
+                pResult[i] = pJoint.CurrentPosition;
+            }
+
+            return pResult;
+        }
+    }
+
     private bool[] _pJointStatusFlags;
 
     private void InitRobot()
@@ -42,6 +60,7 @@ public class RobotController : MonoBehaviour
         }
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private void OnJointMoveEvent(object sender, JointEventArgs e)
     {
         if (!IsRobotActivate) IsRobotActivate = true;
@@ -51,6 +70,7 @@ public class RobotController : MonoBehaviour
             $"[MOVE] Joint={pObject.Name} InputPos={e.TargetPosition} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private void OnJointStopEvent(object sender, JointEventArgs e)
     {
         JointController pObject = (JointController) sender;
@@ -73,16 +93,24 @@ public class RobotController : MonoBehaviour
         };
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private IEnumerator RotateJoints(float[] pTargetPositions, float fSpeed, SpeedRule eMode = SpeedRule.Trapezoid)
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
+        if (pTargetPositions.SequenceEqual(CurrentPosition))
+        {
+            Debug.LogWarning(
+                $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
+            yield break;
+        }
+
         InitRobot();
         for (int i = 0; i < joints.Length; i++)
         {
             GameObject pPart = joints[i].robotPart;
             JointController pJoint = pPart.GetComponent<JointController>();
-            if (pJoint == null) continue;
+            if (pJoint is null) continue;
             pJoint.Index = i;
             pJoint.Name = joints[i].inputAxis;
             pJoint.SyncMode = SyncRule.SpeedSync;
@@ -97,19 +125,26 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log("Exit the absolute move");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition)}]");
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private IEnumerator RotateJoints(float[] pTargetPositions, int nStep, SpeedRule eMode = SpeedRule.Trapezoid)
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
+        if (pTargetPositions.SequenceEqual(CurrentPosition))
+        {
+            Debug.LogWarning(
+                $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
+            yield break;
+        }
         InitRobot();
         for (int i = 0; i < joints.Length; i++)
         {
             GameObject pPart = joints[i].robotPart;
             JointController pJoint = pPart.GetComponent<JointController>();
-            if (pJoint == null) continue;
+            if (pJoint is null) continue;
             pJoint.Index = i;
             pJoint.Name = joints[i].inputAxis;
             pJoint.SyncMode = SyncRule.StepSync;
@@ -124,6 +159,6 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log("Exit the absolute move");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition)}]");
     }
 }

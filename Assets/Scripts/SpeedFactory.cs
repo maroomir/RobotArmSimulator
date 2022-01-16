@@ -18,6 +18,10 @@ public class NormalControl : ISpeedControl
         get => _nMaxStep;
         set
         {
+            if (_fPositionDelta == 0)
+            {
+                Debug.LogWarning("The speed cannot set-up because the position is empty");                
+            }
             _nMaxStep = value;
             _fMaxSpeed = _fPositionDelta / _nMaxStep;
         }
@@ -28,6 +32,10 @@ public class NormalControl : ISpeedControl
         get => _nMoveDir * _fMaxSpeed/ _fDeltaFrame;
         set
         {
+            if (_fPositionDelta == 0)
+            {
+                Debug.LogWarning("The step cannot set-up because the position is empty");                
+            }
             _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
             _nMaxStep = (int) (_nMoveDir * _fPositionDelta / _fMaxSpeed);
         }
@@ -71,6 +79,10 @@ public class TrapezoidControl : ISpeedControl
         get => _nMaxStep;
         set
         {
+            if (_fPositionDelta == 0)
+            {
+                Debug.LogWarning("The speed cannot set-up because the position is empty");                
+            }
             _nMaxStep = value;
             _fMaxSpeed = 2 * _fPositionDelta / (_fRegularRatio + 1) / _nMaxStep;
         }
@@ -81,6 +93,10 @@ public class TrapezoidControl : ISpeedControl
         get => _nMoveDir * _fMaxSpeed / _fDeltaFrame;
         set
         {
+            if (_fPositionDelta == 0)
+            {
+                Debug.LogWarning("The step cannot set-up because the position is empty");                
+            }
             _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
             _nMaxStep = (int) (2 * _fPositionDelta / (_fRegularRatio + 1) / _fMaxSpeed);
         }
@@ -146,6 +162,10 @@ public class TriangleControl : ISpeedControl
         get => _nMaxStep;
         set
         {
+            if (_fPositionDelta == 0)
+            {
+                Debug.LogWarning("The speed cannot set-up because the position is empty");                
+            }
             _nMaxStep = value;
             _fMaxSpeed = 2 * _fPositionDelta / _nMaxStep;
         }
@@ -156,6 +176,10 @@ public class TriangleControl : ISpeedControl
         get => _nMoveDir * _fMaxSpeed / _fDeltaFrame;
         set
         {
+            if (_fPositionDelta == 0)
+            {
+                Debug.LogWarning("The step cannot set-up because the position is empty");                
+            }
             _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
             _nMaxStep = (int) (2 * _fPositionDelta / _fMaxSpeed);
         }
