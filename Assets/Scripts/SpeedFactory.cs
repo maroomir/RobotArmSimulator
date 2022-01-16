@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface ISpeedControl
 {
-    public int MaxStep { get; set; }
+    public int MaxFrame { get; set; }
     public float MaxSpeed { get; set; }
     
     public void SetPosition(float fStartPos, float fTargetPos);
@@ -13,17 +13,17 @@ public interface ISpeedControl
 
 public class NormalControl : ISpeedControl
 {
-    public int MaxStep
+    public int MaxFrame
     {
-        get => _nMaxStep;
+        get => _nMaxFrame;
         set
         {
             if (_fPositionDelta == 0)
             {
                 Debug.LogWarning("The speed cannot set-up because the position is empty");                
             }
-            _nMaxStep = value;
-            _fMaxSpeed = _fPositionDelta / _nMaxStep;
+            _nMaxFrame = value;
+            _fMaxSpeed = _fPositionDelta / _nMaxFrame;
         }
     }
 
@@ -37,14 +37,14 @@ public class NormalControl : ISpeedControl
                 Debug.LogWarning("The step cannot set-up because the position is empty");                
             }
             _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
-            _nMaxStep = (int) (_nMoveDir * _fPositionDelta / _fMaxSpeed);
+            _nMaxFrame = (int) (_nMoveDir * _fPositionDelta / _fMaxSpeed);
         }
     }
 
     private readonly float _fDeltaFrame;
     private float _fStartPosition = 0.0F;
     private float _fPositionDelta = 0.0F;
-    private int _nMaxStep = 20;
+    private int _nMaxFrame = 20;
     private float _fMaxSpeed = 2.0F;
     private int _nMoveDir = 1;
 
@@ -55,7 +55,7 @@ public class NormalControl : ISpeedControl
 
     public float GetPosition(int iX)
     {
-        if (iX > _nMaxStep) iX = _nMaxStep;
+        if (iX > _nMaxFrame) iX = _nMaxFrame;
         return _fStartPosition + GetSpeed(iX) * iX;
     }
 
@@ -74,17 +74,17 @@ public class NormalControl : ISpeedControl
 
 public class TrapezoidControl : ISpeedControl
 {
-    public int MaxStep
+    public int MaxFrame
     {
-        get => _nMaxStep;
+        get => _nMaxFrame;
         set
         {
             if (_fPositionDelta == 0)
             {
                 Debug.LogWarning("The speed cannot set-up because the position is empty");                
             }
-            _nMaxStep = value;
-            _fMaxSpeed = 2 * _fPositionDelta / (_fRegularRatio + 1) / _nMaxStep;
+            _nMaxFrame = value;
+            _fMaxSpeed = 2 * _fPositionDelta / (_fRegularRatio + 1) / _nMaxFrame;
         }
     }
 
@@ -98,7 +98,7 @@ public class TrapezoidControl : ISpeedControl
                 Debug.LogWarning("The step cannot set-up because the position is empty");                
             }
             _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
-            _nMaxStep = (int) (2 * _fPositionDelta / (_fRegularRatio + 1) / _fMaxSpeed);
+            _nMaxFrame = (int) (2 * _fPositionDelta / (_fRegularRatio + 1) / _fMaxSpeed);
         }
 
     }
@@ -108,7 +108,7 @@ public class TrapezoidControl : ISpeedControl
     private float _fStartPostion = 0.0F;
     private float _fTargetPostion = 0.0F;
     private float _fPositionDelta = 0.0F;
-    private int _nMaxStep = 20;
+    private int _nMaxFrame = 20;
     private float _fMaxSpeed = 2.0F;
     private int _nMoveDir = 1;
 
@@ -120,16 +120,16 @@ public class TrapezoidControl : ISpeedControl
 
     public float GetPosition(int iX)
     {
-        if (iX > _nMaxStep) iX = _nMaxStep - 1;
-        int nSlantedCount = (int) ((1 - _fRegularRatio) * _nMaxStep / 2);
+        if (iX > _nMaxFrame) iX = _nMaxFrame - 1;
+        int nSlantedCount = (int) ((1 - _fRegularRatio) * _nMaxFrame / 2);
         if (0 <= iX && iX < nSlantedCount)
             return _fStartPostion + GetSpeed(iX) * iX * 0.5F;
-        if (nSlantedCount <= iX && iX < _nMaxStep - nSlantedCount)
+        if (nSlantedCount <= iX && iX < _nMaxFrame - nSlantedCount)
             return _fStartPostion + _fMaxSpeed * (iX - 0.5F * nSlantedCount);
-        if (_nMaxStep - nSlantedCount <= iX && iX <= _nMaxStep)
+        if (_nMaxFrame - nSlantedCount <= iX && iX <= _nMaxFrame)
             return _fStartPostion
-                   + _fMaxSpeed * (_nMaxStep - 1.5F * nSlantedCount)
-                   + (_fMaxSpeed + GetSpeed(iX)) * (iX - _nMaxStep + nSlantedCount) * 0.5F;
+                   + _fMaxSpeed * (_nMaxFrame - 1.5F * nSlantedCount)
+                   + (_fMaxSpeed + GetSpeed(iX)) * (iX - _nMaxFrame + nSlantedCount) * 0.5F;
         return _fTargetPostion;
     }
 
@@ -143,31 +143,31 @@ public class TrapezoidControl : ISpeedControl
 
     public float GetSpeed(int iX)
     {
-        if (iX > _nMaxStep) iX = _nMaxStep - 1;
-        int nSlantedCount = (int) ((1 - _fRegularRatio) * _nMaxStep / 2);
+        if (iX > _nMaxFrame) iX = _nMaxFrame - 1;
+        int nSlantedCount = (int) ((1 - _fRegularRatio) * _nMaxFrame / 2);
         if (0 <= iX && iX < nSlantedCount)
             return _fMaxSpeed / nSlantedCount * iX;
-        if (nSlantedCount <= iX && iX < _nMaxStep - nSlantedCount)
+        if (nSlantedCount <= iX && iX < _nMaxFrame - nSlantedCount)
             return _fMaxSpeed;
-        if (_nMaxStep - nSlantedCount <= iX && iX <= _nMaxStep)
-            return -_fMaxSpeed / nSlantedCount * (iX - _nMaxStep);
+        if (_nMaxFrame - nSlantedCount <= iX && iX <= _nMaxFrame)
+            return -_fMaxSpeed / nSlantedCount * (iX - _nMaxFrame);
         return 0.0F;
     }
 }
 
 public class TriangleControl : ISpeedControl
 {
-    public int MaxStep
+    public int MaxFrame
     {
-        get => _nMaxStep;
+        get => _nMaxFrame;
         set
         {
             if (_fPositionDelta == 0)
             {
                 Debug.LogWarning("The speed cannot set-up because the position is empty");                
             }
-            _nMaxStep = value;
-            _fMaxSpeed = 2 * _fPositionDelta / _nMaxStep;
+            _nMaxFrame = value;
+            _fMaxSpeed = 2 * _fPositionDelta / _nMaxFrame;
         }
     }
 
@@ -181,7 +181,7 @@ public class TriangleControl : ISpeedControl
                 Debug.LogWarning("The step cannot set-up because the position is empty");                
             }
             _fMaxSpeed = _nMoveDir * value * _fDeltaFrame;
-            _nMaxStep = (int) (2 * _fPositionDelta / _fMaxSpeed);
+            _nMaxFrame = (int) (2 * _fPositionDelta / _fMaxSpeed);
         }
     }
 
@@ -189,7 +189,7 @@ public class TriangleControl : ISpeedControl
     private float _fStartPosition = 0.0F;
     private float _fTargetPosition = 0.0F;
     private float _fPositionDelta = 0.0F;
-    private int _nMaxStep = 20;
+    private int _nMaxFrame = 20;
     private float _fMaxSpeed = 2.0F;
     private int _nMoveDir = 1;
 
@@ -200,13 +200,13 @@ public class TriangleControl : ISpeedControl
 
     public float GetPosition(int iX)
     {
-        if (iX > _nMaxStep) iX = _nMaxStep - 1;
-        if (0 <= iX && iX < _nMaxStep / 2)
+        if (iX > _nMaxFrame) iX = _nMaxFrame - 1;
+        if (0 <= iX && iX < _nMaxFrame / 2)
             return _fStartPosition + GetSpeed(iX) * iX * 0.5F;
-        if (_nMaxStep / 2 <= iX && iX <= _nMaxStep)
+        if (_nMaxFrame / 2 <= iX && iX <= _nMaxFrame)
             return _fStartPosition
-                   + 0.25F * _fMaxSpeed * _nMaxStep
-                   + 0.5F * (GetSpeed(iX) + _fMaxSpeed) * (iX - 0.5F * _nMaxStep);
+                   + 0.25F * _fMaxSpeed * _nMaxFrame
+                   + 0.5F * (GetSpeed(iX) + _fMaxSpeed) * (iX - 0.5F * _nMaxFrame);
         return _fTargetPosition;
     }
 
@@ -220,10 +220,10 @@ public class TriangleControl : ISpeedControl
 
     public float GetSpeed(int iX)
     {
-        if (0 <= iX && iX < _nMaxStep / 2)
-            return 2 * _fMaxSpeed * iX / _nMaxStep;
-        if (_nMaxStep / 2 <= iX && iX <= _nMaxStep)
-            return 2 * _fMaxSpeed - 2 * _fMaxSpeed * iX / _nMaxStep;
+        if (0 <= iX && iX < _nMaxFrame / 2)
+            return 2 * _fMaxSpeed * iX / _nMaxFrame;
+        if (_nMaxFrame / 2 <= iX && iX <= _nMaxFrame)
+            return 2 * _fMaxSpeed - 2 * _fMaxSpeed * iX / _nMaxFrame;
         return 0.0F;
     }
 }

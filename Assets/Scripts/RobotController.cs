@@ -78,17 +78,26 @@ public class RobotController : MonoBehaviour
         Debug.Log($"[STOP] Joint={pObject.Name} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
 
+    public IEnumerator Move(ITeachingComponent pTarget)
+    {
+        yield return pTarget switch
+        {
+            JointPosition pJointPosition => MoveAbsoluteJoints(pJointPosition),
+            _ => throw new ArgumentOutOfRangeException(nameof(pTarget), pTarget, null)
+        };
+    }
+
     public IEnumerator MoveAbsoluteJoints(params float[] pTargetPositions)
     {
-        yield return StartCoroutine(RotateJoints(pTargetPositions, 200.0F));
+        yield return StartCoroutine(RotateJoints(pTargetPositions, 100));
     }
 
     public IEnumerator MoveAbsoluteJoints(JointPosition pTargetPosition)
     {
         yield return pTargetPosition.SyncMode switch
         {
-            SyncRule.SpeedSync => StartCoroutine(RotateJoints(pTargetPosition.Position, pTargetPosition.MaxSpeed)),
-            SyncRule.StepSync => StartCoroutine(RotateJoints(pTargetPosition.Position, pTargetPosition.MaxStep)),
+            SyncRule.Async => StartCoroutine(RotateJoints(pTargetPosition.Contents, pTargetPosition.MaxSpeed)),
+            SyncRule.FrameSync => StartCoroutine(RotateJoints(pTargetPosition.Contents, pTargetPosition.MaxFrame)),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -113,7 +122,7 @@ public class RobotController : MonoBehaviour
             if (pJoint is null) continue;
             pJoint.Index = i;
             pJoint.Name = joints[i].inputAxis;
-            pJoint.SyncMode = SyncRule.SpeedSync;
+            pJoint.SyncMode = SyncRule.Async;
             pJoint.SpeedMode = eMode;
             pJoint.OnJointMoveEvent += OnJointMoveEvent;
             pJoint.OnJointStopEvent += OnJointStopEvent;
@@ -147,11 +156,11 @@ public class RobotController : MonoBehaviour
             if (pJoint is null) continue;
             pJoint.Index = i;
             pJoint.Name = joints[i].inputAxis;
-            pJoint.SyncMode = SyncRule.StepSync;
+            pJoint.SyncMode = SyncRule.FrameSync;
             pJoint.SpeedMode = eMode;
             pJoint.OnJointMoveEvent += OnJointMoveEvent;
             pJoint.OnJointStopEvent += OnJointStopEvent;
-            pJoint.MaxStep = nStep;
+            pJoint.MaxFrame = nStep;
             pJoint.TargetPosition = pTargetPositions[i];
             pJoint.UpdateParameter();
         }
