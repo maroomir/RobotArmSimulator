@@ -7,8 +7,10 @@ using UnityEngine;
 public class ScriptDirector : MonoBehaviour
 {
     public GameObject robot;
+    public GameObject gripper;
 
     private RobotController _pRobotControl;
+    private GripperController _pGripperControl;
     private int _nAxisNum;
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -44,7 +46,9 @@ public class ScriptDirector : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             yield return _pRobotControl.Move(pPos1);
+            yield return _pGripperControl.Close();
             yield return _pRobotControl.Move(pPos2);
+            yield return _pGripperControl.Open();
         }
 
         yield return _pRobotControl.Move(pInitPos);
@@ -55,8 +59,9 @@ public class ScriptDirector : MonoBehaviour
     private void Start()
     {
         _pRobotControl = robot.GetComponent<RobotController>();
+        _pGripperControl = gripper.GetComponent<GripperController>();
         _nAxisNum = _pRobotControl.joints.Length;
-        StartCoroutine(TechnoMotionScript());
-        //StartCoroutine(GripperRotateMotionScript());
+        //StartCoroutine(TechnoMotionScript());
+        StartCoroutine(GripperRotateMotionScript());
     }
 }
