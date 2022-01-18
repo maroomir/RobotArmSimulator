@@ -31,12 +31,14 @@ public class GripperController : MonoBehaviour
         if (!IsGripperActivate) IsGripperActivate = true;
         FingerController pObject = (FingerController) sender;
         _pFingerStatusFlag[pObject.Index] = true;
+        Debug.Log($"[MOVE] Joint={pObject.Name} Status={e.Status} CurrentPos={e.CurrentPosition}");
     }
 
     private void OnFingerStopEvent(object sender, FingerEventArgs e)
     {
         FingerController pObject = (FingerController) sender;
         _pFingerStatusFlag[pObject.Index] = false;
+        Debug.Log($"[STOP] Joint={pObject.Name} Status={e.Status} CurrentPos={e.CurrentPosition}");
     }
 
     private void InitEvents()
@@ -58,7 +60,9 @@ public class GripperController : MonoBehaviour
     public IEnumerator Open()
     {
         InitEvents();
+        _pFingerAController.MaxFrame = 10;
         _pFingerAController.UpdateParameter(GripperStatus.Open);
+        _pFingerAController.MaxFrame = 10;
         _pFingerBController.UpdateParameter(GripperStatus.Open);
         yield return new WaitUntil(() => IsGripperActivate);
         yield return new WaitUntil(() => _pFingerStatusFlag.All(bFlag => !bFlag));
@@ -69,7 +73,9 @@ public class GripperController : MonoBehaviour
     public IEnumerator Close()
     {
         InitEvents();
+        _pFingerAController.MaxFrame = 10;
         _pFingerAController.UpdateParameter(GripperStatus.Closed);
+        _pFingerAController.MaxFrame = 10;
         _pFingerBController.UpdateParameter(GripperStatus.Closed);
         yield return new WaitUntil(() => IsGripperActivate);
         yield return new WaitUntil(() => _pFingerStatusFlag.All(bFlag => !bFlag));

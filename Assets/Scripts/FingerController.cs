@@ -11,11 +11,11 @@ public enum GripperStatus
 public class FingerEventArgs : EventArgs
 {
     public GripperStatus Status { get; set; }
-    public float ClosedRatio { get; set; }
-    public FingerEventArgs(float fSpeed, float fRatio)
+    public float CurrentPosition { get; set; }
+    public FingerEventArgs(float fSpeed, float fPosition)
     {
         Status = (fSpeed == 0) ? GripperStatus.Fixed : ((fSpeed < 0) ? GripperStatus.Open : GripperStatus.Closed);
-        ClosedRatio = fRatio;
+        CurrentPosition = fPosition;
     }
 }
 
@@ -65,10 +65,10 @@ public class FingerController : MonoBehaviour
         switch (eStatus)
         {
             case GripperStatus.Open:
-                _fSpeed = -0.1F;
+                _fSpeed = -1.0F/MaxFrame;
                 break;
             case GripperStatus.Closed:
-                _fSpeed = 0.1F;
+                _fSpeed = 1.0F/MaxFrame;
                 break;
         }
     }
