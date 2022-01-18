@@ -22,6 +22,7 @@ public class ScriptDirector : MonoBehaviour
         JointPosition pPos2 = JointPosition.FromPosition(90.0F, 0.0F, -45.0F, 90.0F, -45.0F, -90.0F, 90.0F);
         pInitPos.MaxSpeed = 100;
         yield return _pRobotControl.Move(pInitPos);
+        yield return _pGripperControl.Close();
         pPos1.MaxSpeed = 100;
         yield return _pRobotControl.Move(pPos1);
         pPos1.MaxFrame = 10;
@@ -33,14 +34,15 @@ public class ScriptDirector : MonoBehaviour
             yield return _pRobotControl.Move(pPos2);
         }
         yield return _pRobotControl.Move(pHomePos);
+        yield return _pGripperControl.Open();
     }
 
     public IEnumerator GripperRotateMotionScript()
     {
         JointPosition pHomePos = JointPosition.Home(_nAxisNum);
         JointPosition pInitPos = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
-        JointPosition pPos1 = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 360.0F);
-        JointPosition pPos2 = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -360.0F);
+        JointPosition pPos1 = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
+        JointPosition pPos2 = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
         pInitPos.MaxSpeed = 100;
         yield return _pRobotControl.Move(pInitPos);
         for (int i = 0; i < 10; i++)
@@ -61,7 +63,7 @@ public class ScriptDirector : MonoBehaviour
         _pRobotControl = robot.GetComponent<RobotController>();
         _pGripperControl = gripper.GetComponent<GripperController>();
         _nAxisNum = _pRobotControl.joints.Length;
-        //StartCoroutine(TechnoMotionScript());
-        StartCoroutine(GripperRotateMotionScript());
+        StartCoroutine(TechnoMotionScript());
+        //StartCoroutine(GripperRotateMotionScript());
     }
 }

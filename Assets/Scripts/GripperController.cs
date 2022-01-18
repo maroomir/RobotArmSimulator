@@ -2,84 +2,101 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
+[System.Serializable]
+public struct FingerInfo
+{
+    public string name;
+    public GameObject robotPart;
+    public float stroke;
+}
+
 public class GripperController : MonoBehaviour
 {
-    public GameObject fingerA;
-    public GameObject fingerB;
+    public FingerInfo[] fingers;
 
     public bool IsGripperActivate { get; private set; }
-
-    private FingerController _pFingerAController;
-    private FingerController _pFingerBController;
-    private readonly bool[] _pFingerStatusFlag = new bool[2];
-
+    public int MaxFrame { get; private set; } = 10;
+    
     public Vector3 EndPoint { get; }
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-        _pFingerAController = fingerA.GetComponent<FingerController>();
-        _pFingerAController.Index = 0;
-        _pFingerAController.Name = "FingerA";
-        _pFingerBController = fingerB.GetComponent<FingerController>();
-        _pFingerAController.Index = 1;
-        _pFingerAController.Name = "FingerB";
-    }
+    private bool[] _pFingerStatusFlag;
 
     private void OnFingerMoveEvent(object sender, FingerEventArgs e)
     {
         if (!IsGripperActivate) IsGripperActivate = true;
         FingerController pObject = (FingerController) sender;
         _pFingerStatusFlag[pObject.Index] = true;
-        Debug.Log($"[MOVE] Joint={pObject.Name} Status={e.Status} CurrentPos={e.CurrentPosition}");
+        Debug.Log($"[MOVE] Finger={pObject.Name} Status={e.Status} Speed={e.Speed} CurrentPos={e.CurrentPosition}");
     }
 
     private void OnFingerStopEvent(object sender, FingerEventArgs e)
     {
         FingerController pObject = (FingerController) sender;
         _pFingerStatusFlag[pObject.Index] = false;
-        Debug.Log($"[STOP] Joint={pObject.Name} Status={e.Status} CurrentPos={e.CurrentPosition}");
+        Debug.Log($"[STOP] Finger={pObject.Name} Status={e.Status} CurrentPos={e.CurrentPosition}");
     }
 
-    private void InitEvents()
+    private void InitGripper()
     {
-        _pFingerAController.OnFingerMoveEvent += OnFingerMoveEvent;
-        _pFingerAController.OnFingerStopEvent += OnFingerStopEvent;
-        _pFingerBController.OnFingerMoveEvent += OnFingerMoveEvent;
-        _pFingerBController.OnFingerStopEvent += OnFingerStopEvent;
+        IsGripperActivate = false;
+        if (_pFingerStatusFlag?.Length != fingers.Length)
+            _pFingerStatusFlag = new bool[fingers.Length];
     }
 
-    private void CloseEvents()
+    private void ExitGripper()
     {
-        _pFingerAController.OnFingerMoveEvent -= OnFingerMoveEvent;
-        _pFingerAController.OnFingerStopEvent -= OnFingerStopEvent;
-        _pFingerBController.OnFingerMoveEvent -= OnFingerMoveEvent;
-        _pFingerBController.OnFingerStopEvent -= OnFingerStopEvent;
+        IsGripperActivate = false;
+        for (int i = 0; i < fingers.Length; i++)
+        {
+            GameObject pPart = fingers[i].robotPart;
+            FingerController pFinger = pPart.GetComponent<FingerController>();
+            if(pFinger == null) continue;
+            pFinger.OnFingerMoveEvent -= OnFingerMoveEvent;
+            pFinger.OnFingerStopEvent -= OnFingerStopEvent;
+        }
     }
 
     public IEnumerator Open()
     {
-        InitEvents();
-        _pFingerAController.MaxFrame = 10;
-        _pFingerAController.UpdateParameter(GripperStatus.Open);
-        _pFingerAController.MaxFrame = 10;
-        _pFingerBController.UpdateParameter(GripperStatus.Open);
+        InitGripper();
+        for (int i = 0; i < fingers.Length; i++)
+        {
+            GameObject pPart = fingers[i].robotPart;
+            FingerController pFinger = pPart.GetComponent<FingerController>();
+            if(pFinger == null) continue;
+            pFinger.Index = i;
+            pFinger.Name = fingers[i].name;
+            pFinger.Stroke = fingers[i].stroke;
+            pFinger.Status = FingerStatus.Open;
+            pFinger.MaxFrame = MaxFrame;
+            pFinger.OnFingerMoveEvent += OnFingerMoveEvent;
+            pFinger.OnFingerStopEvent += OnFingerStopEvent;
+            pFinger.UpdateParameter();
+        }
         yield return new WaitUntil(() => IsGripperActivate);
         yield return new WaitUntil(() => _pFingerStatusFlag.All(bFlag => !bFlag));
-        IsGripperActivate = false;
-        CloseEvents();
+        ExitGripper();
     }
 
     public IEnumerator Close()
     {
-        InitEvents();
-        _pFingerAController.MaxFrame = 10;
-        _pFingerAController.UpdateParameter(GripperStatus.Closed);
-        _pFingerAController.MaxFrame = 10;
-        _pFingerBController.UpdateParameter(GripperStatus.Closed);
+        InitGripper();
+        for (int i = 0; i < fingers.Length; i++)
+        {
+            GameObject pPart = fingers[i].robotPart;
+            FingerController pFinger = pPart.GetComponent<FingerController>();
+            if(pFinger == null) continue;
+            pFinger.Index = i;
+            pFinger.Name = fingers[i].name;
+            pFinger.Stroke = fingers[i].stroke;
+            pFinger.Status = FingerStatus.Closed;
+            pFinger.MaxFrame = MaxFrame;
+            pFinger.OnFingerMoveEvent += OnFingerMoveEvent;
+            pFinger.OnFingerStopEvent += OnFingerStopEvent;
+            pFinger.UpdateParameter();
+        }
         yield return new WaitUntil(() => IsGripperActivate);
         yield return new WaitUntil(() => _pFingerStatusFlag.All(bFlag => !bFlag));
-        IsGripperActivate = false;
-        CloseEvents();
+        ExitGripper();
     }
 }

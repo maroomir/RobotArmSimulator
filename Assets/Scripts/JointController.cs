@@ -6,12 +6,14 @@ using UnityEngine;
 
 public class JointEventArgs : EventArgs
 {
+    public int Step { get; set; }
     public float CurrentPosition { get; set; }
     public float TargetPosition { get; set; }
     public float Speed { get; set; }
 
-    public JointEventArgs(float fCurr, float fTarget, float fSpeed)
+    public JointEventArgs(int nStep, float fSpeed, float fCurr, float fTarget)
     {
+        Step = nStep;
         CurrentPosition = fCurr;
         TargetPosition = fTarget;
         Speed = fSpeed;
@@ -94,12 +96,13 @@ public class JointController : MonoBehaviour
     {
         if (_nCurrFrame == MaxFrame)
         {
-            OnJointStopEvent?.Invoke(this, new JointEventArgs(CurrentPosition, CurrentPosition, 0.0F));
+            OnJointStopEvent?.Invoke(this, new JointEventArgs(0, 0.0F, CurrentPosition, CurrentPosition));
             return;
         }
 
         float fTargetPos = _pSpeedController.GetPosition(_nCurrFrame);
-        OnJointMoveEvent?.Invoke(this, new JointEventArgs(CurrentPosition, fTargetPos, _pSpeedController.GetSpeed(_nCurrFrame)));
+        OnJointMoveEvent?.Invoke(this,
+            new JointEventArgs(_nCurrFrame, _pSpeedController.GetSpeed(_nCurrFrame), CurrentPosition, fTargetPos));
         ArticulationDrive pDrive = _pArticulation.xDrive;
         pDrive.target = fTargetPos;
         _pArticulation.xDrive = pDrive;

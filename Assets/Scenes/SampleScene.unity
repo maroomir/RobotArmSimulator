@@ -440,7 +440,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 966725216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed76206bfabd89e4a89c91ead092e5ce, type: 3}
+  m_Script: {fileID: 11500000, guid: 52bcf221b3143044eacca7f07ea5d9be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   robot: {fileID: 4140136056455461650}
@@ -1519,7 +1519,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 3
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.52300006, y: 11.505004, z: -1.3913976}
+  m_ParentAnchorPosition: {x: -0.52300006, y: 11.505003, z: -1.3913975}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
@@ -1765,7 +1765,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 3
   m_Mass: 1
-  m_ParentAnchorPosition: {x: 0.52300006, y: 11.505004, z: 1.3914006}
+  m_ParentAnchorPosition: {x: 0.52300006, y: 11.505003, z: 1.3914005}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
@@ -2187,7 +2187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55abf168aff4102b952babbacf6ec5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stroke: 1.1
 --- !u!33 &8828157231989758501
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2208,7 +2207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55abf168aff4102b952babbacf6ec5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stroke: -1.1
 --- !u!4 &8939085610673007408
 Transform:
   m_ObjectHideFlags: 0
@@ -2251,5 +2249,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2715127ddf654bddbb60f5822e431323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fingerA: {fileID: 5196201712029170170}
-  fingerB: {fileID: 4499598326344535233}
+  fingers:
+  - name: FingerA
+    robotPart: {fileID: 5196201712029170170}
+    stroke: -1.3
+  - name: FingerB
+    robotPart: {fileID: 4499598326344535233}
+    stroke: 1.3
