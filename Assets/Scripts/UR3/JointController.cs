@@ -43,6 +43,7 @@ public class JointController : MonoBehaviour
     public float MaxSpeed { get; set; }
     public SpeedRule SpeedMode { get; set; } = SpeedRule.Trapezoid;
     public SyncRule SyncMode { get; set; } = SyncRule.Async;
+    public OperationMode ControlMode { get; set; } = OperationMode.Auto;
 
     public float CurrentPosition => (_pArticulation == null) ? 0.0F : Mathf.Rad2Deg * _pArticulation.jointPosition[0];
 
@@ -66,7 +67,6 @@ public class JointController : MonoBehaviour
             SpeedRule.Triangle => new TriangleControl(Time.fixedDeltaTime),
             _ => _pSpeedController
         };
-
         UpdateParameter();
     }
 
@@ -91,9 +91,26 @@ public class JointController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (ControlMode != OperationMode.Teaching)
+            return;
+        float fTargetPos = CurrentPosition;
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.UpArrow))
+            fTargetPos -= MaxSpeed * Time.fixedDeltaTime;
+        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.DownArrow))
+            fTargetPos += MaxSpeed * Time.fixedDeltaTime;
+        Debug.Log($"[TEACHING] Index={Index} CurrentPos={CurrentPosition} TargetPos={fTargetPos} Speed={MaxSpeed}");
+        ArticulationDrive pDrive = _pArticulation.xDrive;
+        pDrive.target = fTargetPos;
+        _pArticulation.xDrive = pDrive;
+    }
+
     // Update is called on fixed frequency
     private void FixedUpdate()
     {
+        if (ControlMode != OperationMode.Auto)
+            return;
         if (_nCurrFrame == MaxFrame)
         {
             OnJointStopEvent?.Invoke(this, new JointEventArgs(0, 0.0F, CurrentPosition, CurrentPosition));
@@ -102,7 +119,8 @@ public class JointController : MonoBehaviour
 
         float fTargetPos = _pSpeedController.GetPosition(_nCurrFrame);
         OnJointMoveEvent?.Invoke(this,
-            new JointEventArgs(_nCurrFrame, _pSpeedController.GetSpeed(_nCurrFrame), CurrentPosition, fTargetPos));
+            new JointEventArgs(_nCurrFrame, _pSpeedController.GetSpeed(_nCurrFrame), CurrentPosition,
+                fTargetPos));
         ArticulationDrive pDrive = _pArticulation.xDrive;
         pDrive.target = fTargetPos;
         _pArticulation.xDrive = pDrive;

@@ -13,7 +13,10 @@ public struct JointInfo
 {
     public string inputAxis;
     public GameObject robotPart;
+    public KeyCode key;
 }
+
+public enum OperationMode { Teaching, Auto }
 
 public class RobotController : MonoBehaviour
 {
@@ -37,14 +40,36 @@ public class RobotController : MonoBehaviour
             return pResult;
         }
     }
+    
+    public OperationMode ControlMode { get; set; }
 
     private bool[] _pJointStatusFlags;
+    
+    // Start is called before the first frame update
+    private void Start()
+    {
+        _pJointStatusFlags = new bool[joints.Length];
+    }
+
+    // Update is called on every frames
+    private void Update()
+    {
+        if (ControlMode == OperationMode.Teaching)
+        {
+            for (int i = 0; i < joints.Length; i++)
+            {
+                GameObject pPart = joints[i].robotPart;
+                JointController pJoint = pPart.GetComponent<JointController>();
+                pJoint.ControlMode = Input.GetKey(joints[i].key) ? OperationMode.Teaching : OperationMode.Auto;
+                pJoint.MaxSpeed = 100.0F;
+            }
+        }
+    }
 
     private void InitRobot()
     {
         IsRobotActivate = false;
-        if (_pJointStatusFlags?.Length != joints.Length)
-            _pJointStatusFlags = new bool[joints.Length];
+        for (int i = 0; i < joints.Length; i++) _pJointStatusFlags[i] = false;
     }
 
     private void ExitRobot()

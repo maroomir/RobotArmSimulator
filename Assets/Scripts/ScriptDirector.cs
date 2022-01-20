@@ -61,6 +61,7 @@ public class ScriptDirector : MonoBehaviour
         _pRobotControl = robot.GetComponent<RobotController>();
         _pGripperControl = gripper.GetComponent<GripperController>();
         _nAxisNum = _pRobotControl.joints.Length;
+        _pRobotControl.ControlMode = OperationMode.Auto;
         StartCoroutine(TechnoMotionScript());
         //StartCoroutine(GripperRotateMotionScript());
     }

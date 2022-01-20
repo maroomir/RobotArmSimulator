@@ -440,11 +440,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 966725216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efee5748fec4e4072903357987011ad8, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b763bf10701145459293198a3294efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   robot: {fileID: 4140136056455461650}
-  gripper: {fileID: 5356287217858681123}
 --- !u!1001 &1874760029154655816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -496,6 +495,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[0].key
+      value: 113
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[1].key
+      value: 119
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[2].key
+      value: 101
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[3].key
+      value: 114
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[4].key
+      value: 116
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[5].key
+      value: 121
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[6].key
+      value: 117
+      objectReference: {fileID: 0}
     - target: {fileID: 2553764870836012378, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_Name
       value: UR3
@@ -505,10 +532,5 @@ PrefabInstance:
 --- !u!1 &4140136056455461650 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2553764870836012378, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
-  m_PrefabInstance: {fileID: 1874760029154655816}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5356287217858681123 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5787449365189863275, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
   m_PrefabInstance: {fileID: 1874760029154655816}
   m_PrefabAsset: {fileID: 0}

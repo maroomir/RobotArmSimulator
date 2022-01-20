@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class TeachingDirector : MonoBehaviour
 {
+    public GameObject robot;
+
+    private RobotController _pRobotControl;
+    
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        _pRobotControl = robot.GetComponent<RobotController>();
+        _pRobotControl.ControlMode = OperationMode.Teaching;
     }
 }

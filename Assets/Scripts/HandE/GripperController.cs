@@ -20,6 +20,12 @@ public class GripperController : MonoBehaviour
     public Vector3 EndPoint { get; }
 
     private bool[] _pFingerStatusFlag;
+    
+    // Start is called before the first frame update
+    private void Start()
+    {
+        _pFingerStatusFlag = new bool[fingers.Length];
+    }
 
     private void OnFingerMoveEvent(object sender, FingerEventArgs e)
     {
@@ -39,8 +45,7 @@ public class GripperController : MonoBehaviour
     private void InitGripper()
     {
         IsGripperActivate = false;
-        if (_pFingerStatusFlag?.Length != fingers.Length)
-            _pFingerStatusFlag = new bool[fingers.Length];
+        for (int i = 0; i < fingers.Length; i++) _pFingerStatusFlag[i] = false;
     }
 
     private void ExitGripper()
