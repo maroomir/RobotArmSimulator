@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.KeyCode;
 
 
 public class JointEventArgs : EventArgs
@@ -91,15 +92,25 @@ public class JointController : MonoBehaviour
         }
     }
 
+    private KeyCode GetInputKeys(KeyCode[] pTargets)
+    {
+        foreach (KeyCode eKey in pTargets)
+            if (Input.GetKey(eKey))
+                return eKey;
+        return KeyCode.None;
+    }
+
     private void Update()
     {
-        if (ControlMode != OperationMode.Teaching)
-            return;
-        float fTargetPos = CurrentPosition;
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.UpArrow))
-            fTargetPos -= MaxSpeed * Time.fixedDeltaTime;
-        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.DownArrow))
-            fTargetPos += MaxSpeed * Time.fixedDeltaTime;
+        if (ControlMode != OperationMode.Teaching) return;
+        float fTargetPos = GetInputKeys(new[] {LeftArrow, UpArrow, RightArrow, DownArrow}) switch
+        {
+            LeftArrow => CurrentPosition - MaxSpeed * Time.fixedDeltaTime / 2.0F,
+            UpArrow => CurrentPosition - MaxSpeed * Time.fixedDeltaTime,
+            RightArrow => CurrentPosition + MaxSpeed * Time.fixedDeltaTime / 2.0F,
+            DownArrow => CurrentPosition + MaxSpeed * Time.fixedDeltaTime,
+            _ => CurrentPosition
+        };
         Debug.Log($"[TEACHING] Index={Index} CurrentPos={CurrentPosition} TargetPos={fTargetPos} Speed={MaxSpeed}");
         ArticulationDrive pDrive = _pArticulation.xDrive;
         pDrive.target = fTargetPos;
@@ -109,8 +120,7 @@ public class JointController : MonoBehaviour
     // Update is called on fixed frequency
     private void FixedUpdate()
     {
-        if (ControlMode != OperationMode.Auto)
-            return;
+        if (ControlMode != OperationMode.Auto) return;
         if (_nCurrFrame == MaxFrame)
         {
             OnJointStopEvent?.Invoke(this, new JointEventArgs(0, 0.0F, CurrentPosition, CurrentPosition));
