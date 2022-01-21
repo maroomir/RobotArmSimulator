@@ -16,22 +16,15 @@ public class FingerEventArgs : EventArgs
     }
 }
 
-public class FingerController : MonoBehaviour
+public class FingerController : MonoBehaviour, IMotorControl
 {
     public delegate void FingerMoveCallback(object sender, FingerEventArgs e);
 
     public int Index { get; set; }
     public string Name { get; set; }
-    public float CurrentPosition => Mathf.InverseLerp(_pInitPoint.z, _fStroke, transform.localPosition.z);
+    public float CurrentPosition => Mathf.InverseLerp(_fOpenPos, _fClosedPos, transform.localPosition.z);
+    public float MaxSpeed { get; set; }
     public int MaxFrame { get; set; }
-    public float Stroke
-    {
-        set
-        {
-            _fStroke = value;
-            SetLimit();
-        }
-    }
     public FingerStatus Status { get; set; }
 
     public event FingerMoveCallback OnFingerMoveEvent;
@@ -41,8 +34,10 @@ public class FingerController : MonoBehaviour
     private Vector3 _pInitPoint;
     private float _fStroke;
     private int _nCurrFrame;
-    private float _fSpeed;
-    private float _fStartPos;
+    private float _fGripSpeed;
+    private float _fStartRate;
+    private float _fOpenPos;
+    private float _fClosedPos;
 
     // Start is called before the first frame update
     private void Start()
@@ -50,16 +45,15 @@ public class FingerController : MonoBehaviour
         _pInitPoint = transform.localPosition;
         _pArticulation = GetComponent<ArticulationBody>();
         Status = FingerStatus.Open;
-        SetLimit();
     }
 
-    private void SetLimit()
+    public void SetLimit(float fOpenLimit, float fClosedLimit)
     {
-        float fOpenPos = ToDrive((float)FingerStatus.Open);
-        float fClosedPos = ToDrive((float)FingerStatus.Closed);
+        _fOpenPos = fOpenLimit;
+        _fClosedPos = fClosedLimit;
         ArticulationDrive pDrive = _pArticulation.zDrive;
-        pDrive.lowerLimit = Mathf.Min(fOpenPos, fClosedPos);
-        pDrive.upperLimit = Mathf.Max(fOpenPos, fClosedPos);
+        pDrive.lowerLimit = Mathf.Min(_fOpenPos, _fClosedPos);
+        pDrive.upperLimit = Mathf.Max(_fOpenPos, _fClosedPos);
         _pArticulation.zDrive = pDrive;
     }
 
@@ -69,23 +63,17 @@ public class FingerController : MonoBehaviour
         switch (Status)
         {
             case FingerStatus.Open:
-                _fStartPos = (float) FingerStatus.Closed;
-                _fSpeed = - 1.0F/MaxFrame;
+                _fStartRate = (float) FingerStatus.Closed;
+                _fGripSpeed = - 1.0F/MaxFrame;
                 break;
             case FingerStatus.Closed:
-                _fStartPos = (float) FingerStatus.Open;
-                _fSpeed = 1.0F/MaxFrame;
+                _fStartRate = (float) FingerStatus.Open;
+                _fGripSpeed = 1.0F/MaxFrame;
                 break;
         }
     }
 
-    private float ToDrive(float fRatio)
-    {
-        float fCurrentPos = Mathf.Lerp(_pInitPoint.z, _fStroke, fRatio);
-        return (fCurrentPos - _pInitPoint.z) * transform.parent.localScale.z;
-    }
-
-    // Update is called on fixed freqency
+    // Update is called on fixed frequency
     private void FixedUpdate()
     {
         if (_nCurrFrame == MaxFrame || Status == FingerStatus.Fixed)
@@ -93,8 +81,12 @@ public class FingerController : MonoBehaviour
             OnFingerStopEvent?.Invoke(this, new FingerEventArgs(0, 0.0F, CurrentPosition));
             return;
         }
-        float fTargetPos = ToDrive(_fStartPos + _nCurrFrame * _fSpeed);
-        OnFingerMoveEvent?.Invoke(this, new FingerEventArgs(_nCurrFrame, _fSpeed, CurrentPosition));
+
+        Vector3 localScale = transform.parent.localScale;
+        float fRatio = _fStartRate + _nCurrFrame * _fGripSpeed;
+        float fTargetPos = CommonFunctions.CalculatePositionByRatio(_fOpenPos, _fClosedPos, fRatio, localScale.z);
+        Debug.Log($"[TEMP] {Name}: Start={_fStartRate}, Frame={_nCurrFrame}, Speed={_nCurrFrame}, Curr={CurrentPosition}, Scale={localScale.z}");
+        OnFingerMoveEvent?.Invoke(this, new FingerEventArgs(_nCurrFrame, _fGripSpeed, CurrentPosition));
         ArticulationDrive pDrive = _pArticulation.zDrive;
         pDrive.target = fTargetPos;
         _pArticulation.zDrive = pDrive;

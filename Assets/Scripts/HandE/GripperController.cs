@@ -7,7 +7,8 @@ public struct FingerInfo
 {
     public string name;
     public GameObject robotPart;
-    public float stroke;
+    public float openLimit;
+    public float closedLimit;
 }
 
 public class GripperController : MonoBehaviour
@@ -71,7 +72,7 @@ public class GripperController : MonoBehaviour
             if(pFinger == null) continue;
             pFinger.Index = i;
             pFinger.Name = fingers[i].name;
-            pFinger.Stroke = fingers[i].stroke;
+            pFinger.SetLimit(fingers[i].openLimit, fingers[i].closedLimit);
             pFinger.Status = FingerStatus.Open;
             pFinger.MaxFrame = MaxFrame;
             pFinger.OnFingerMoveEvent += OnFingerMoveEvent;
@@ -93,7 +94,7 @@ public class GripperController : MonoBehaviour
             if(pFinger == null) continue;
             pFinger.Index = i;
             pFinger.Name = fingers[i].name;
-            pFinger.Stroke = fingers[i].stroke;
+            pFinger.SetLimit(fingers[i].openLimit, fingers[i].closedLimit);
             pFinger.Status = FingerStatus.Closed;
             pFinger.MaxFrame = MaxFrame;
             pFinger.OnFingerMoveEvent += OnFingerMoveEvent;

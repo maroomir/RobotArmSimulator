@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4430025, g: 0.49219477, b: 0.5719246, a: 1}
+  m_IndirectSpecularColor: {r: 0.44300318, g: 0.49219626, b: 0.57192606, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -458,8 +458,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2553764870828772222, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: m_ParentAnchorPosition.y
+      value: 11.505004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870828772222, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -1.3913975
+      value: -1.3913976
       objectReference: {fileID: 0}
     - target: {fileID: 2553764870836012371, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_RootOrder
@@ -533,13 +537,89 @@ PrefabInstance:
       propertyPath: joints.Array.data[6].key
       value: 117
       objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[0].negativeLimit
+      value: -360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[0].positiveLimit
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[1].negativeLimit
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[1].positiveLimit
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[2].negativeLimit
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[2].positiveLimit
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[3].negativeLimit
+      value: -360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[3].positiveLimit
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[4].negativeLimit
+      value: -360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[4].positiveLimit
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[5].negativeLimit
+      value: -360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[5].positiveLimit
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[6].negativeLimit
+      value: -360
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870836012374, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: joints.Array.data[6].positiveLimit
+      value: 360
+      objectReference: {fileID: 0}
     - target: {fileID: 2553764870836012378, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_Name
       value: UR3
       objectReference: {fileID: 0}
     - target: {fileID: 2553764870976646633, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_ParentAnchorPosition.y
-      value: 11.505003
+      value: 11.505004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2553764870976646633, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: m_ParentAnchorPosition.z
+      value: 1.3914006
+      objectReference: {fileID: 0}
+    - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: fingers.Array.data[0].openLimit
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: fingers.Array.data[1].openLimit
+      value: -1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: fingers.Array.data[0].closedLimit
+      value: -1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+      propertyPath: fingers.Array.data[1].closedLimit
+      value: 1.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
@@ -557,10 +637,10 @@ Light:
   m_GameObject: {fileID: 4140136056455461650}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 2
+  m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.8
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

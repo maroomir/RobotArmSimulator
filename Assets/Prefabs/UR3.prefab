@@ -507,24 +507,38 @@ MonoBehaviour:
   - inputAxis: Base
     robotPart: {fileID: 2553764870517229517}
     key: 49
+    negativeLimit: -360
+    positiveLimit: 360
   - inputAxis: Shoulder
     robotPart: {fileID: 2553764871893135855}
     key: 50
+    negativeLimit: -180
+    positiveLimit: 180
   - inputAxis: Elbow
     robotPart: {fileID: 2553764872269091949}
     key: 51
+    negativeLimit: -180
+    positiveLimit: 180
   - inputAxis: Wrist1
     robotPart: {fileID: 2553764871223731066}
     key: 52
+    negativeLimit: -360
+    positiveLimit: 360
   - inputAxis: Wrist2
     robotPart: {fileID: 2553764870533864342}
     key: 53
+    negativeLimit: -360
+    positiveLimit: 360
   - inputAxis: Wrist3
     robotPart: {fileID: 2553764872192259283}
     key: 54
+    negativeLimit: -360
+    positiveLimit: 360
   - inputAxis: HandE
     robotPart: {fileID: 5787449365189863275}
     key: 55
+    negativeLimit: -360
+    positiveLimit: 360
 --- !u!1 &2553764871223731066
 GameObject:
   m_ObjectHideFlags: 0
@@ -1207,11 +1221,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3515755232882643056, guid: b3bbf766dd38d4d98aef2066fdf07dcb, type: 3}
       propertyPath: m_ParentAnchorPosition.y
-      value: 11.505003
+      value: 11.505004
       objectReference: {fileID: 0}
     - target: {fileID: 3515755233579972327, guid: b3bbf766dd38d4d98aef2066fdf07dcb, type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -1.3913975
+      value: -1.3913976
       objectReference: {fileID: 0}
     - target: {fileID: 4894170173485636338, guid: b3bbf766dd38d4d98aef2066fdf07dcb, type: 3}
       propertyPath: m_Name
