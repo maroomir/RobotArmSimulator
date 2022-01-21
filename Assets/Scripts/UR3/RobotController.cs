@@ -16,28 +16,26 @@ public struct JointInfo
     public KeyCode key;
 }
 
-public enum OperationMode { Teaching, Auto }
-
 public class RobotController : MonoBehaviour
 {
     public JointInfo[] joints;
 
     public bool IsRobotActivate { get; private set; }
 
-    public float[] CurrentPosition
+    public JointPoint CurrentPoint
     {
         get
         {
-            float[] pResult = new float[joints.Length];
+            float[] pPoints = new float[joints.Length];
             for (int i = 0; i < joints.Length; i++)
             {
                 GameObject pPart = joints[i].robotPart;
                 JointController pJoint = pPart.GetComponent<JointController>();
                 if (pJoint == null) continue;
-                pResult[i] = pJoint.CurrentPosition;
+                pPoints[i] = pJoint.CurrentPosition;
             }
 
-            return pResult;
+            return new JointPoint(pPoints);
         }
     }
     
@@ -62,6 +60,7 @@ public class RobotController : MonoBehaviour
                 JointController pJoint = pPart.GetComponent<JointController>();
                 pJoint.ControlMode = Input.GetKey(joints[i].key) ? OperationMode.Teaching : OperationMode.Auto;
                 pJoint.MaxSpeed = 100.0F;
+                pJoint.Break = (pJoint.ControlMode == OperationMode.Teaching) ? BreakStatus.Release : BreakStatus.Hold;
             }
         }
     }
@@ -103,11 +102,11 @@ public class RobotController : MonoBehaviour
         Debug.Log($"[STOP] Joint={pObject.Name} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
 
-    public IEnumerator Move(ITeachingComponent pTarget)
+    public IEnumerator Move(ITeachingPoint pTarget)
     {
         yield return pTarget switch
         {
-            JointPosition pJointPosition => MoveAbsoluteJoints(pJointPosition),
+            JointPoint pJointPosition => MoveAbsoluteJoints(pJointPosition),
             _ => throw new ArgumentOutOfRangeException(nameof(pTarget), pTarget, null)
         };
     }
@@ -117,12 +116,12 @@ public class RobotController : MonoBehaviour
         yield return StartCoroutine(RotateJoints(pTargetPositions, 100));
     }
 
-    public IEnumerator MoveAbsoluteJoints(JointPosition pTargetPosition)
+    public IEnumerator MoveAbsoluteJoints(JointPoint pTargetPoint)
     {
-        yield return pTargetPosition.SyncMode switch
+        yield return pTargetPoint.SyncMode switch
         {
-            SyncRule.Async => StartCoroutine(RotateJoints(pTargetPosition.Contents, pTargetPosition.MaxSpeed)),
-            SyncRule.FrameSync => StartCoroutine(RotateJoints(pTargetPosition.Contents, pTargetPosition.MaxFrame)),
+            SyncRule.Async => StartCoroutine(RotateJoints(pTargetPoint.Values, pTargetPoint.MaxSpeed)),
+            SyncRule.FrameSync => StartCoroutine(RotateJoints(pTargetPoint.Values, pTargetPoint.MaxFrame)),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -132,7 +131,7 @@ public class RobotController : MonoBehaviour
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
-        if (pTargetPositions.SequenceEqual(CurrentPosition))
+        if (pTargetPositions.SequenceEqual(CurrentPoint.Values))
         {
             Debug.LogWarning(
                 $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
@@ -159,7 +158,7 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition)}]");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPoint.Values)}]");
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -167,7 +166,7 @@ public class RobotController : MonoBehaviour
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
-        if (pTargetPositions.SequenceEqual(CurrentPosition))
+        if (pTargetPositions.SequenceEqual(CurrentPoint.Values))
         {
             Debug.LogWarning(
                 $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
@@ -193,6 +192,6 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition)}]");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPoint.Values)}]");
     }
 }

@@ -110,7 +110,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 3
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.52300006, y: 11.505003, z: -1.3913975}
+  m_ParentAnchorPosition: {x: -0.52300006, y: 11.505003, z: -1.3914005}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4021441623575990032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e55abf168aff4102b952babbacf6ec5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 18be8fb0494924e41bd3b8fc8da79793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4729433689464027691
@@ -274,7 +274,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 3
   m_Mass: 1
-  m_ParentAnchorPosition: {x: 0.52300006, y: 11.505003, z: 1.3914005}
+  m_ParentAnchorPosition: {x: 0.52300006, y: 11.505004, z: 1.3914005}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4729433689464027691}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e55abf168aff4102b952babbacf6ec5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 18be8fb0494924e41bd3b8fc8da79793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4894170173485636338
@@ -515,7 +515,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4894170173485636338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &8480502464401549539
@@ -527,7 +527,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4894170173485636338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2715127ddf654bddbb60f5822e431323, type: 3}
+  m_Script: {fileID: 11500000, guid: f2829469b7a7dba4281e3731d87181ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fingers:

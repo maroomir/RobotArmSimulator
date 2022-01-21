@@ -1,13 +1,6 @@
 using System;
 using UnityEngine;
 
-public enum FingerStatus
-{
-    Fixed = -1,
-    Open = 0,
-    Closed = 1,
-}
-
 public class FingerEventArgs : EventArgs
 {
     public int Step { get; set; }

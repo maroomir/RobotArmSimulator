@@ -1,16 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-public interface ISpeedControl
-{
-    public int MaxFrame { get; set; }
-    public float MaxSpeed { get; set; }
-    
-    public void SetPosition(float fStartPos, float fTargetPos);
-    public float GetSpeed(int iX);
-    public float GetPosition(int iX);
-}
-
 public class NormalControl : ISpeedControl
 {
     public int MaxFrame

@@ -166,7 +166,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764870517229517}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2553764870533864342
@@ -334,7 +334,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764870533864342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2553764870836012378
@@ -500,24 +500,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764870836012378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f47f38f524a5344958047f26e5e35ee5, type: 3}
+  m_Script: {fileID: 11500000, guid: f1ac8436f92dadc4e9839d7999892122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   joints:
   - inputAxis: Base
     robotPart: {fileID: 2553764870517229517}
+    key: 49
   - inputAxis: Shoulder
     robotPart: {fileID: 2553764871893135855}
+    key: 50
   - inputAxis: Elbow
     robotPart: {fileID: 2553764872269091949}
+    key: 51
   - inputAxis: Wrist1
     robotPart: {fileID: 2553764871223731066}
+    key: 52
   - inputAxis: Wrist2
     robotPart: {fileID: 2553764870533864342}
+    key: 53
   - inputAxis: Wrist3
     robotPart: {fileID: 2553764872192259283}
-  - inputAxis: Hand
+    key: 54
+  - inputAxis: HandE
     robotPart: {fileID: 5787449365189863275}
+    key: 55
 --- !u!1 &2553764871223731066
 GameObject:
   m_ObjectHideFlags: 0
@@ -684,7 +691,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764871223731066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2553764871893135855
@@ -854,7 +861,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764871893135855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2553764872192259283
@@ -1023,7 +1030,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764872192259283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2553764872269091949
@@ -1188,7 +1195,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2553764872269091949}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2d7eca597b80490cb5a00d4b2bb42d5, type: 3}
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1421645854793530777
@@ -1198,6 +1205,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2553764872192259272}
     m_Modifications:
+    - target: {fileID: 3515755232882643056, guid: b3bbf766dd38d4d98aef2066fdf07dcb, type: 3}
+      propertyPath: m_ParentAnchorPosition.y
+      value: 11.505003
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515755233579972327, guid: b3bbf766dd38d4d98aef2066fdf07dcb, type: 3}
+      propertyPath: m_ParentAnchorPosition.z
+      value: -1.3913975
+      objectReference: {fileID: 0}
     - target: {fileID: 4894170173485636338, guid: b3bbf766dd38d4d98aef2066fdf07dcb, type: 3}
       propertyPath: m_Name
       value: HandE

@@ -14,10 +14,10 @@ public class ScriptDirector : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     private IEnumerator TechnoMotionScript()
     {
-        JointPosition pHomePos = JointPosition.Home();
-        JointPosition pInitPos = JointPosition.FromPosition(0.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 180.0F);
-        JointPosition pPos1 = JointPosition.FromPosition(-90.0F, 0.0F, 45.0F, -90.0F, 45.0F, 90.0F, -90.0F);
-        JointPosition pPos2 = JointPosition.FromPosition(90.0F, 0.0F, -45.0F, 90.0F, -45.0F, -90.0F, 90.0F);
+        JointPoint pHomePos = JointPoint.Home();
+        JointPoint pInitPos = JointPoint.FromPosition(0.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 180.0F);
+        JointPoint pPos1 = JointPoint.FromPosition(-90.0F, 0.0F, 45.0F, -90.0F, 45.0F, 90.0F, -90.0F);
+        JointPoint pPos2 = JointPoint.FromPosition(90.0F, 0.0F, -45.0F, 90.0F, -45.0F, -90.0F, 90.0F);
         pInitPos.MaxSpeed = 100;
         yield return _pRobotControl.Move(pInitPos);
         yield return _pGripperControl.Close();
@@ -37,10 +37,10 @@ public class ScriptDirector : MonoBehaviour
 
     public IEnumerator GripperRotateMotionScript()
     {
-        JointPosition pHomePos = JointPosition.Home(_nAxisNum);
-        JointPosition pInitPos = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
-        JointPosition pPos1 = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
-        JointPosition pPos2 = JointPosition.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
+        JointPoint pHomePos = JointPoint.Home(_nAxisNum);
+        JointPoint pInitPos = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
+        JointPoint pPos1 = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
+        JointPoint pPos2 = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
         pInitPos.MaxSpeed = 100;
         yield return _pRobotControl.Move(pInitPos);
         for (int i = 0; i < 10; i++)
