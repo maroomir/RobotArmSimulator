@@ -607,19 +607,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: fingers.Array.data[0].openLimit
-      value: 1.1
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: fingers.Array.data[1].openLimit
-      value: -1.1
+      value: -1.4
       objectReference: {fileID: 0}
     - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: fingers.Array.data[0].closedLimit
-      value: -1.1
+      value: -1.4
       objectReference: {fileID: 0}
     - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: fingers.Array.data[1].closedLimit
-      value: 1.1
+      value: 1.4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}

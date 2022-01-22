@@ -28,19 +28,19 @@ public class GripperController : MonoBehaviour
         _pFingerStatusFlag = new bool[fingers.Length];
     }
 
-    private void OnFingerMoveEvent(object sender, FingerEventArgs e)
+    private void OnFingerMoveEvent(object sender, MoterEventArgs e)
     {
         if (!IsGripperActivate) IsGripperActivate = true;
         FingerController pObject = (FingerController) sender;
         _pFingerStatusFlag[pObject.Index] = true;
-        Debug.Log($"[MOVE] Finger={pObject.Name} Status={e.Status} Speed={e.Speed} CurrentPos={e.CurrentPosition}");
+        Debug.Log($"[MOVE] Finger={pObject.Name} Speed={e.Speed} CurrentPos={e.CurrentPosition}");
     }
 
-    private void OnFingerStopEvent(object sender, FingerEventArgs e)
+    private void OnFingerStopEvent(object sender, MoterEventArgs e)
     {
         FingerController pObject = (FingerController) sender;
         _pFingerStatusFlag[pObject.Index] = false;
-        Debug.Log($"[STOP] Finger={pObject.Name} Status={e.Status} CurrentPos={e.CurrentPosition}");
+        Debug.Log($"[STOP] Finger={pObject.Name} CurrentPos={e.CurrentPosition}");
     }
 
     private void InitGripper()
@@ -57,8 +57,8 @@ public class GripperController : MonoBehaviour
             GameObject pPart = fingers[i].robotPart;
             FingerController pFinger = pPart.GetComponent<FingerController>();
             if(pFinger == null) continue;
-            pFinger.OnFingerMoveEvent -= OnFingerMoveEvent;
-            pFinger.OnFingerStopEvent -= OnFingerStopEvent;
+            pFinger.OnMoveEvent -= OnFingerMoveEvent;
+            pFinger.OnStopEvent -= OnFingerStopEvent;
         }
     }
 
@@ -73,11 +73,10 @@ public class GripperController : MonoBehaviour
             pFinger.Index = i;
             pFinger.Name = fingers[i].name;
             pFinger.SetLimit(fingers[i].openLimit, fingers[i].closedLimit);
-            pFinger.Status = FingerStatus.Open;
             pFinger.MaxFrame = MaxFrame;
-            pFinger.OnFingerMoveEvent += OnFingerMoveEvent;
-            pFinger.OnFingerStopEvent += OnFingerStopEvent;
-            pFinger.UpdateParameter();
+            pFinger.OnMoveEvent += OnFingerMoveEvent;
+            pFinger.OnStopEvent += OnFingerStopEvent;
+            pFinger.Open();
         }
         yield return new WaitUntil(() => IsGripperActivate);
         yield return new WaitUntil(() => _pFingerStatusFlag.All(bFlag => !bFlag));
@@ -95,11 +94,10 @@ public class GripperController : MonoBehaviour
             pFinger.Index = i;
             pFinger.Name = fingers[i].name;
             pFinger.SetLimit(fingers[i].openLimit, fingers[i].closedLimit);
-            pFinger.Status = FingerStatus.Closed;
             pFinger.MaxFrame = MaxFrame;
-            pFinger.OnFingerMoveEvent += OnFingerMoveEvent;
-            pFinger.OnFingerStopEvent += OnFingerStopEvent;
-            pFinger.UpdateParameter();
+            pFinger.OnMoveEvent += OnFingerMoveEvent;
+            pFinger.OnStopEvent += OnFingerStopEvent;
+            pFinger.Close();
         }
         yield return new WaitUntil(() => IsGripperActivate);
         yield return new WaitUntil(() => _pFingerStatusFlag.All(bFlag => !bFlag));

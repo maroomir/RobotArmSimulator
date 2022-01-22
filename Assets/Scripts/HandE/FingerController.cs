@@ -1,50 +1,42 @@
 using System;
 using UnityEngine;
 
-public class FingerEventArgs : EventArgs
-{
-    public int Step { get; set; }
-    public float Speed { get; set; }
-    public FingerStatus Status { get; set; }
-    public float CurrentPosition { get; set; }
-    public FingerEventArgs(int nStep, float fSpeed, float fPosition)
-    {
-        Step = nStep;
-        Speed = fSpeed;
-        Status = (fSpeed == 0) ? FingerStatus.Fixed : ((fSpeed < 0) ? FingerStatus.Open : FingerStatus.Closed);
-        CurrentPosition = fPosition;
-    }
-}
-
 public class FingerController : MonoBehaviour, IMotorControl
 {
-    public delegate void FingerMoveCallback(object sender, FingerEventArgs e);
-
     public int Index { get; set; }
     public string Name { get; set; }
-    public float CurrentPosition => Mathf.InverseLerp(_fOpenPos, _fClosedPos, transform.localPosition.z);
+    public float CurrentPosition => transform.localPosition.z;
     public float MaxSpeed { get; set; }
     public int MaxFrame { get; set; }
-    public FingerStatus Status { get; set; }
+    public float TargetPosition { get; private set; }
+    public SpeedRule SpeedMode { get; set; }
+    public BreakStatus Break { get; set; }
 
-    public event FingerMoveCallback OnFingerMoveEvent;
-    public event FingerMoveCallback OnFingerStopEvent;
+    public event MoterMoveCallback OnMoveEvent;
+    public event MoterMoveCallback OnStopEvent;
 
     private ArticulationBody _pArticulation;
-    private Vector3 _pInitPoint;
-    private float _fStroke;
     private int _nCurrFrame;
-    private float _fGripSpeed;
-    private float _fStartRate;
-    private float _fOpenPos;
-    private float _fClosedPos;
+    private ISpeedControl _pSpeedController;
+    private float _fOperatedPos;
+    private float _fOpenPos = 0.0F;
+    private float _fClosedPos = 0.0F;
 
     // Start is called before the first frame update
     private void Start()
     {
-        _pInitPoint = transform.localPosition;
+        MaxFrame = 0;
+        MaxSpeed = 0.0F;
+        SpeedMode = SpeedRule.None;
+
         _pArticulation = GetComponent<ArticulationBody>();
-        Status = FingerStatus.Open;
+        _pSpeedController = SpeedMode switch
+        {
+            SpeedRule.None => new NormalControl(Time.fixedDeltaTime),
+            SpeedRule.Trapezoid => new TrapezoidControl(Time.fixedDeltaTime),
+            SpeedRule.Triangle => new TriangleControl(Time.fixedDeltaTime),
+            _ => _pSpeedController
+        };
     }
 
     public void SetLimit(float fOpenLimit, float fClosedLimit)
@@ -57,38 +49,52 @@ public class FingerController : MonoBehaviour, IMotorControl
         _pArticulation.zDrive = pDrive;
     }
 
+    public void Open()
+    {
+        TargetPosition = _fOpenPos;
+        UpdateParameter();
+    }
+    
+    public void Close()
+    {
+        TargetPosition = _fClosedPos;
+        UpdateParameter();
+    }
+
     public void UpdateParameter()
     {
         _nCurrFrame = 0;
-        switch (Status)
-        {
-            case FingerStatus.Open:
-                _fStartRate = (float) FingerStatus.Closed;
-                _fGripSpeed = - 1.0F/MaxFrame;
-                break;
-            case FingerStatus.Closed:
-                _fStartRate = (float) FingerStatus.Open;
-                _fGripSpeed = 1.0F/MaxFrame;
-                break;
-        }
+        _pSpeedController.SetPosition(CurrentPosition, TargetPosition);
+        _pSpeedController.MaxFrame = MaxFrame;
+        MaxSpeed = _pSpeedController.MaxSpeed;
+        Break = BreakStatus.Release;
     }
 
     // Update is called on fixed frequency
     private void FixedUpdate()
     {
-        if (_nCurrFrame == MaxFrame || Status == FingerStatus.Fixed)
+        if (Break == BreakStatus.Hold)
         {
-            OnFingerStopEvent?.Invoke(this, new FingerEventArgs(0, 0.0F, CurrentPosition));
+            _fOperatedPos = CurrentPosition;
+            Debug.Log($"[DEBUG] {Name} CurrentPos={CurrentPosition}");
             return;
         }
 
-        Vector3 localScale = transform.parent.localScale;
-        float fRatio = _fStartRate + _nCurrFrame * _fGripSpeed;
-        float fTargetPos = CommonFunctions.CalculatePositionByRatio(_fOpenPos, _fClosedPos, fRatio, localScale.z);
-        Debug.Log($"[TEMP] {Name}: Start={_fStartRate}, Frame={_nCurrFrame}, Speed={_nCurrFrame}, Curr={CurrentPosition}, Scale={localScale.z}");
-        OnFingerMoveEvent?.Invoke(this, new FingerEventArgs(_nCurrFrame, _fGripSpeed, CurrentPosition));
+        if (_nCurrFrame >= MaxFrame)
+        {
+            OnStopEvent?.Invoke(this, new MoterEventArgs(0, 0.0F, CurrentPosition, CurrentPosition));
+            Break = BreakStatus.Hold;
+            return;
+        }
+
+        _fOperatedPos = (_pSpeedController.GetPosition(_nCurrFrame) - _fOpenPos) * transform.parent.localScale.z;
+        OnMoveEvent?.Invoke(this,
+            new MoterEventArgs(_nCurrFrame, _pSpeedController.GetSpeed(_nCurrFrame), CurrentPosition,
+                _fOperatedPos));
+        Debug.Log(
+            $"[TEMP] {Name}: Operate={_fOperatedPos}, Frame={_nCurrFrame}, Speed={_pSpeedController.GetSpeed(_nCurrFrame)}, Curr={CurrentPosition}");
         ArticulationDrive pDrive = _pArticulation.zDrive;
-        pDrive.target = fTargetPos;
+        pDrive.target = _fOperatedPos;
         _pArticulation.zDrive = pDrive;
         _nCurrFrame += 1;
     }

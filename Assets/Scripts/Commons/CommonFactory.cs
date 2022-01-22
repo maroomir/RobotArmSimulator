@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,13 +25,6 @@ public enum BreakStatus
 {
     Release = 0,
     Hold,
-}
-
-public enum FingerStatus
-{
-    Fixed = -1,
-    Open = 0,
-    Closed = 1,
 }
 
 public interface ISpeedControl
@@ -61,11 +55,34 @@ public interface IMotorControl
     public int Index { get; set; }
     public string Name { get; set; }
     public float CurrentPosition { get; }
+    public float TargetPosition { get; }
     public float MaxSpeed { get; set; }
     public int MaxFrame { get; set; }
+    public SpeedRule SpeedMode { get; set; }
+    public BreakStatus Break { get; set; }
+    public event MoterMoveCallback OnMoveEvent;
+    public event MoterMoveCallback OnStopEvent;
 
     public void SetLimit(float fLimit1, float fLimit2);
     public void UpdateParameter();
+}
+
+public delegate void MoterMoveCallback(object sender, MoterEventArgs e);
+
+public class MoterEventArgs : EventArgs
+{
+    public int Step { get; set; }
+    public float CurrentPosition { get; set; }
+    public float TargetPosition { get; set; }
+    public float Speed { get; set; }
+
+    public MoterEventArgs(int nStep, float fSpeed, float fCurr, float fTarget)
+    {
+        Step = nStep;
+        CurrentPosition = fCurr;
+        TargetPosition = fTarget;
+        Speed = fSpeed;
+    }
 }
 
 public static class CommonFunctions

@@ -342,8 +342,8 @@ GameObject:
   - component: {fileID: 1962109075192677787}
   - component: {fileID: 3515755232056350576}
   - component: {fileID: 3515755232056350570}
-  - component: {fileID: 8480502464401549536}
   - component: {fileID: 8480502464401549539}
+  - component: {fileID: 8480502464401549536}
   m_Layer: 0
   m_Name: HandE
   m_TagString: Untagged
@@ -506,18 +506,6 @@ ArticulationBody:
   m_Immovable: 0
   m_UseGravity: 1
   m_CollisionDetectionMode: 0
---- !u!114 &8480502464401549536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4894170173485636338}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8480502464401549539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -533,14 +521,24 @@ MonoBehaviour:
   fingers:
   - name: FingerA
     robotPart: {fileID: 4729433689464027691}
-    key: 0
     openLimit: 0
     closedLimit: -1.3
   - name: FingerB
     robotPart: {fileID: 4021441623575990032}
-    key: 0
     openLimit: 0
     closedLimit: 1.3
+--- !u!114 &8480502464401549536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4894170173485636338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de329ed130d839b4aac72930969caab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7093850866960126432
 GameObject:
   m_ObjectHideFlags: 0

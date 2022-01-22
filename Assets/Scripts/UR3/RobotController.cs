@@ -88,13 +88,13 @@ public class RobotController : MonoBehaviour
             GameObject pPart = joints[i].robotPart;
             JointController pJoint = pPart.GetComponent<JointController>();
             if (pJoint == null) continue;
-            pJoint.OnJointMoveEvent -= OnJointMoveEvent;
-            pJoint.OnJointStopEvent -= OnJointStopEvent;
+            pJoint.OnMoveEvent -= OnJointMoveEvent;
+            pJoint.OnStopEvent -= OnJointStopEvent;
         }
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
-    private void OnJointMoveEvent(object sender, JointEventArgs e)
+    private void OnJointMoveEvent(object sender, MoterEventArgs e)
     {
         if (!IsRobotActivate) IsRobotActivate = true;
         JointController pObject = (JointController) sender;
@@ -104,7 +104,7 @@ public class RobotController : MonoBehaviour
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
-    private void OnJointStopEvent(object sender, JointEventArgs e)
+    private void OnJointStopEvent(object sender, MoterEventArgs e)
     {
         JointController pObject = (JointController) sender;
         _pJointStatusFlags[pObject.Index] = false;
@@ -157,8 +157,8 @@ public class RobotController : MonoBehaviour
             pJoint.Name = joints[i].inputAxis;
             pJoint.SyncMode = SyncRule.Async;
             pJoint.SpeedMode = eMode;
-            pJoint.OnJointMoveEvent += OnJointMoveEvent;
-            pJoint.OnJointStopEvent += OnJointStopEvent;
+            pJoint.OnMoveEvent += OnJointMoveEvent;
+            pJoint.OnStopEvent += OnJointStopEvent;
             pJoint.MaxSpeed = fSpeed;
             pJoint.TargetPosition = pTargetPositions[i];
             pJoint.UpdateParameter();
@@ -191,8 +191,8 @@ public class RobotController : MonoBehaviour
             pJoint.Name = joints[i].inputAxis;
             pJoint.SyncMode = SyncRule.FrameSync;
             pJoint.SpeedMode = eMode;
-            pJoint.OnJointMoveEvent += OnJointMoveEvent;
-            pJoint.OnJointStopEvent += OnJointStopEvent;
+            pJoint.OnMoveEvent += OnJointMoveEvent;
+            pJoint.OnStopEvent += OnJointStopEvent;
             pJoint.MaxFrame = nStep;
             pJoint.TargetPosition = pTargetPositions[i];
             pJoint.UpdateParameter();
