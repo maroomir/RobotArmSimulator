@@ -8,6 +8,7 @@ public class FingerController : MonoBehaviour, IMotorControl
     public float CurrentPosition => transform.localPosition.z;
     public float MaxSpeed { get; set; }
     public int MaxFrame { get; set; }
+    public float Stroke => (_fClosedPos - _fOpenPos) * transform.parent.localScale.z;
     public float TargetPosition { get; private set; }
     public SpeedRule SpeedMode { get; set; }
     public BreakStatus Break { get; set; }
@@ -44,8 +45,8 @@ public class FingerController : MonoBehaviour, IMotorControl
         _fOpenPos = fOpenLimit;
         _fClosedPos = fClosedLimit;
         ArticulationDrive pDrive = _pArticulation.zDrive;
-        pDrive.lowerLimit = Mathf.Min(_fOpenPos, _fClosedPos);
-        pDrive.upperLimit = Mathf.Max(_fOpenPos, _fClosedPos);
+        pDrive.lowerLimit = Mathf.Min(Stroke, 0.0F);
+        pDrive.upperLimit = Mathf.Max(Stroke, 0.0F);
         _pArticulation.zDrive = pDrive;
     }
 
@@ -76,7 +77,6 @@ public class FingerController : MonoBehaviour, IMotorControl
         if (Break == BreakStatus.Hold)
         {
             _fOperatedPos = CurrentPosition;
-            Debug.Log($"[DEBUG] {Name} CurrentPos={CurrentPosition}");
             return;
         }
 
@@ -91,8 +91,6 @@ public class FingerController : MonoBehaviour, IMotorControl
         OnMoveEvent?.Invoke(this,
             new MoterEventArgs(_nCurrFrame, _pSpeedController.GetSpeed(_nCurrFrame), CurrentPosition,
                 _fOperatedPos));
-        Debug.Log(
-            $"[TEMP] {Name}: Operate={_fOperatedPos}, Frame={_nCurrFrame}, Speed={_pSpeedController.GetSpeed(_nCurrFrame)}, Curr={CurrentPosition}");
         ArticulationDrive pDrive = _pArticulation.zDrive;
         pDrive.target = _fOperatedPos;
         _pArticulation.zDrive = pDrive;

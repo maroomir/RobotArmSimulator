@@ -58,6 +58,7 @@ public interface IMotorControl
     public float TargetPosition { get; }
     public float MaxSpeed { get; set; }
     public int MaxFrame { get; set; }
+    public float Stroke { get; }
     public SpeedRule SpeedMode { get; set; }
     public BreakStatus Break { get; set; }
     public event MoterMoveCallback OnMoveEvent;

@@ -14,8 +14,6 @@ public struct JointInfo
     public string inputAxis;
     public GameObject robotPart;
     public KeyCode key;
-    public float negativeLimit;
-    public float positiveLimit;
 }
 
 public class RobotController : MonoBehaviour
@@ -49,13 +47,6 @@ public class RobotController : MonoBehaviour
     private void Start()
     {
         _pJointStatusFlags = new bool[joints.Length];
-        for (int i = 0; i < joints.Length; i++)
-        {
-            GameObject pPart = joints[i].robotPart;
-            JointController pJoint = pPart.GetComponent<JointController>();
-            if (pJoint == null) continue;
-            pJoint.SetLimit(joints[i].negativeLimit, joints[i].positiveLimit);
-        }
     }
 
     // Update is called on every frames
