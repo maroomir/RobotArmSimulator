@@ -68,7 +68,13 @@ public class RobotController : MonoBehaviour
     private void InitRobot()
     {
         IsRobotActivate = false;
-        for (int i = 0; i < joints.Length; i++) _pJointStatusFlags[i] = false;
+        for (int i = 0; i < joints.Length; i++)
+        {
+            _pJointStatusFlags[i] = false;
+            GameObject pPart = joints[i].robotPart;
+            JointController pJoint = pPart.GetComponent<JointController>();
+            pJoint.ControlMode = OperationMode.Auto;
+        }
     }
 
     private void ExitRobot()

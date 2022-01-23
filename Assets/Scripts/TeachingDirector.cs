@@ -20,7 +20,6 @@ public class TeachingDirector : MonoBehaviour
         yield return _pRobotControl.Move(pHomePos);
         foreach(ITeachingPoint pPoint in _pListPoints)
         {
-            pPoint.MaxFrame = 10;
             yield return _pRobotControl.Move(pPoint);
         }
     }
@@ -47,14 +46,19 @@ public class TeachingDirector : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
+            _pRobotControl.ControlMode = OperationMode.Auto;
             if (_pListPoints.Count > 0)
             {
                 string strFilePath = Path.Combine(_strTeachingRoot, "Points.json");
                 TeachingFactory.SaveTeachingPoints(_pListPoints, strFilePath);
             }
-
-            _pRobotControl.ControlMode = OperationMode.Auto;
             StartCoroutine(ReplayScript());
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            // Seperate the access key for escaping the auto mode
+            // Fix the stopping the replay script action
             _pRobotControl.ControlMode = OperationMode.Teaching;
         }
     }

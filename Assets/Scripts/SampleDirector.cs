@@ -2,7 +2,7 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
-public class ScriptDirector : MonoBehaviour
+public class SampleDirector : MonoBehaviour
 {
     public GameObject robot;
     public GameObject gripper;
