@@ -22,7 +22,7 @@ public class RobotController : MonoBehaviour
 
     public bool IsRobotActivate { get; private set; }
 
-    public JointPoint CurrentPoint
+    public JointPoint CurrentPosition
     {
         get
         {
@@ -131,7 +131,7 @@ public class RobotController : MonoBehaviour
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
-        if (pTargetPositions.SequenceEqual(CurrentPoint.Values))
+        if (pTargetPositions.SequenceEqual(CurrentPosition.Values))
         {
             Debug.LogWarning(
                 $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
@@ -158,7 +158,7 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPoint.Values)}]");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition.Values)}]");
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -166,7 +166,7 @@ public class RobotController : MonoBehaviour
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
-        if (pTargetPositions.SequenceEqual(CurrentPoint.Values))
+        if (pTargetPositions.SequenceEqual(CurrentPosition.Values))
         {
             Debug.LogWarning(
                 $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
@@ -192,6 +192,6 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPoint.Values)}]");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition.Values)}]");
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using Newtonsoft.Json;
+using UnityEngine;
 
 public class JointPoint : ITeachingPoint
 {
@@ -66,29 +68,22 @@ public class JointPoint : ITeachingPoint
     {
         return $"[JOINT]{Name}=" + string.Join(',', Values);
     }
-
-    public void Scan(string strValue)
-    {
-        throw new NotImplementedException();
-    }
 }
 
 public static class TeachingFactory
 {
     public static void SaveTeachingPoints(List<ITeachingPoint> pPoints, string strPath)
     {
-        FileInfo pFile = new FileInfo(strPath);
-        if (!pFile.Exists)
+        if (!CommonFunctions.VerifyFilePath(strPath))
         {
-            FileStream pStream = pFile.Create();
-            pStream.Close();
+            Debug.LogWarning("Failed to save the file");
+            return;
         }
 
-        using StreamWriter pWriter = new StreamWriter(strPath);
-        foreach (ITeachingPoint pPoint in pPoints)
+        using (StreamWriter pWriter = new StreamWriter(strPath))
         {
-            string strInfo = pPoint.Print();
-            pWriter.WriteLine(strInfo);
+            JsonSerializer pSerializer = new JsonSerializer();
+            pSerializer.Serialize(pWriter, pPoints);
         }
     }
 

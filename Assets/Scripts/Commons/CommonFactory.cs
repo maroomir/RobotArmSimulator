@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public enum OperationMode
@@ -47,7 +48,6 @@ public interface ITeachingPoint
     public float[] Values { get; }
 
     public string Print();
-    public void Scan(string strValue);
 }
 
 public interface IMotorControl
@@ -88,6 +88,48 @@ public class MoterEventArgs : EventArgs
 
 public static class CommonFunctions
 {
+    public static bool VerifyDirectory(string strPath)
+    {
+        if (string.IsNullOrEmpty(strPath)) return false;
+        if (!Directory.Exists(strPath))
+        {
+            Directory.CreateDirectory(strPath);
+            if (Directory.Exists(strPath))
+                return true;
+        }
+        else
+            return true;
+
+        return false;
+    }
+
+    public static bool VerifyFilePath(string strPath, bool bCreateFile = true)
+    {
+        if (string.IsNullOrEmpty(strPath)) return false;
+        FileInfo fi = new FileInfo(strPath);
+        if (!VerifyDirectory(fi.DirectoryName))
+            return false;
+
+        try
+        {
+            if (!fi.Exists)
+            {
+                if (!bCreateFile) return false;
+                FileStream fs = fi.Create();
+                fs.Close();
+                return true;
+            }
+            else
+                return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+
+        return false;
+    }
+    
     public static bool IsInputKeys(IEnumerable<KeyCode> pObserves)
     {
         foreach (KeyCode eKey in pObserves)
