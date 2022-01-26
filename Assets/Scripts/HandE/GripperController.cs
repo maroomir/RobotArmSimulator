@@ -16,7 +16,7 @@ public class GripperController : MonoBehaviour
     public FingerInfo[] fingers;
 
     public bool IsGripperActivate { get; private set; }
-    public int MaxFrame { get; private set; } = 10;
+    public int FrameCount { get; private set; } = 10;
     
     public Vector3 EndPoint { get; }
 
@@ -73,7 +73,7 @@ public class GripperController : MonoBehaviour
             pFinger.Index = i;
             pFinger.Name = fingers[i].name;
             pFinger.SetLimit(fingers[i].openLimit, fingers[i].closedLimit);
-            pFinger.MaxFrame = MaxFrame;
+            pFinger.FrameCount = FrameCount;
             pFinger.OnMoveEvent += OnFingerMoveEvent;
             pFinger.OnStopEvent += OnFingerStopEvent;
             pFinger.Open();
@@ -94,7 +94,7 @@ public class GripperController : MonoBehaviour
             pFinger.Index = i;
             pFinger.Name = fingers[i].name;
             pFinger.SetLimit(fingers[i].openLimit, fingers[i].closedLimit);
-            pFinger.MaxFrame = MaxFrame;
+            pFinger.FrameCount = FrameCount;
             pFinger.OnMoveEvent += OnFingerMoveEvent;
             pFinger.OnStopEvent += OnFingerStopEvent;
             pFinger.Close();

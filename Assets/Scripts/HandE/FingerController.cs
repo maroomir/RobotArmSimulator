@@ -6,8 +6,7 @@ public class FingerController : MonoBehaviour, IMotorControl
     public int Index { get; set; }
     public string Name { get; set; }
     public float CurrentPosition => transform.localPosition.z;
-    public float MaxSpeed { get; set; }
-    public int MaxFrame { get; set; }
+    public int FrameCount { get; set; }
     public float Stroke => (_fClosedPos - _fOpenPos) * transform.parent.localScale.z;
     public float TargetPosition { get; private set; }
     public SpeedRule SpeedMode { get; set; }
@@ -19,15 +18,14 @@ public class FingerController : MonoBehaviour, IMotorControl
     private ArticulationBody _pArticulation;
     private int _nCurrFrame;
     private ISpeedControl _pSpeedController;
-    private float _fOperatedPos;
+    private float _fOperatedPos = 0.0F;
     private float _fOpenPos = 0.0F;
     private float _fClosedPos = 0.0F;
 
     // Start is called before the first frame update
     private void Start()
     {
-        MaxFrame = 0;
-        MaxSpeed = 0.0F;
+        FrameCount = 0;
         SpeedMode = SpeedRule.None;
 
         _pArticulation = GetComponent<ArticulationBody>();
@@ -55,7 +53,7 @@ public class FingerController : MonoBehaviour, IMotorControl
         TargetPosition = _fOpenPos;
         UpdateParameter();
     }
-    
+
     public void Close()
     {
         TargetPosition = _fClosedPos;
@@ -66,8 +64,7 @@ public class FingerController : MonoBehaviour, IMotorControl
     {
         _nCurrFrame = 0;
         _pSpeedController.SetPosition(CurrentPosition, TargetPosition);
-        _pSpeedController.MaxFrame = MaxFrame;
-        MaxSpeed = _pSpeedController.MaxSpeed;
+        _pSpeedController.FrameCount = FrameCount;
         Break = BreakStatus.Release;
     }
 
@@ -80,7 +77,7 @@ public class FingerController : MonoBehaviour, IMotorControl
             return;
         }
 
-        if (_nCurrFrame >= MaxFrame)
+        if (_nCurrFrame >= FrameCount)
         {
             OnStopEvent?.Invoke(this, new MoterEventArgs(0, 0.0F, CurrentPosition, CurrentPosition));
             Break = BreakStatus.Hold;

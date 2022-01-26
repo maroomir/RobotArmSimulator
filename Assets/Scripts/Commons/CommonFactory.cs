@@ -16,12 +16,6 @@ public enum SpeedRule
     Trapezoid,
 }
 
-public enum SyncRule
-{
-    Async = 0,
-    FrameSync,
-}
-
 public enum BreakStatus
 {
     Release = 0,
@@ -30,7 +24,7 @@ public enum BreakStatus
 
 public interface ISpeedControl
 {
-    public int MaxFrame { get; set; }
+    public int FrameCount { get; set; }
     public float MaxSpeed { get; set; }
 
     public void SetPosition(float fStartPos, float fTargetPos);
@@ -42,9 +36,7 @@ public interface ITeachingPoint
 {
     public string Name { get; }
     public int AxisNum { get; }
-    public float MaxSpeed { get; set; }
-    public int MaxFrame { get; set; }
-    public SyncRule SyncMode { get; set; }
+    public int FrameCount { get; set; }
     public float[] Values { get; }
 
     public string Print();
@@ -56,8 +48,7 @@ public interface IMotorControl
     public string Name { get; set; }
     public float CurrentPosition { get; }
     public float TargetPosition { get; }
-    public float MaxSpeed { get; set; }
-    public int MaxFrame { get; set; }
+    public int FrameCount { get; set; }
     public float Stroke { get; }
     public SpeedRule SpeedMode { get; set; }
     public BreakStatus Break { get; set; }
@@ -144,12 +135,5 @@ public static class CommonFunctions
             if (Input.GetKey(eKey))
                 return eKey;
         return KeyCode.None;
-    }
-    
-    public static float CalculatePositionByRatio(float fStart, float fEnd, float fRatio, float fScale = 1.0F)
-    {
-        Debug.Log($"[TEMP] CalculatePositionByRatio: Start={fStart}, End={fEnd}, Ratio={fRatio}");
-        float fCurrent = Mathf.Lerp(fStart, fEnd, fRatio);
-        return (fCurrent - fStart) * fScale;
     }
 }

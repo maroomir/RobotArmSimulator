@@ -18,13 +18,13 @@ public class SampleDirector : MonoBehaviour
         JointPoint pInitPos = JointPoint.FromPosition(0.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 180.0F);
         JointPoint pPos1 = JointPoint.FromPosition(-90.0F, 0.0F, 45.0F, -90.0F, 45.0F, 90.0F, -90.0F);
         JointPoint pPos2 = JointPoint.FromPosition(90.0F, 0.0F, -45.0F, 90.0F, -45.0F, -90.0F, 90.0F);
-        pInitPos.MaxSpeed = 100;
+        pInitPos.FrameCount = 100;
         yield return _pRobotControl.Move(pInitPos);
         yield return _pGripperControl.Close();
-        pPos1.MaxSpeed = 100;
+        pPos1.FrameCount = 100;
         yield return _pRobotControl.Move(pPos1);
-        pPos1.MaxFrame = 10;
-        pPos2.MaxFrame = 10;
+        pPos1.FrameCount = 10;
+        pPos2.FrameCount = 10;
         Thread.Sleep(2000);
         for (int i = 0; i < 20; i++)
         {
@@ -41,7 +41,7 @@ public class SampleDirector : MonoBehaviour
         JointPoint pInitPos = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
         JointPoint pPos1 = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
         JointPoint pPos2 = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
-        pInitPos.MaxSpeed = 100;
+        pInitPos.FrameCount = 100;
         yield return _pRobotControl.Move(pInitPos);
         for (int i = 0; i < 10; i++)
         {
