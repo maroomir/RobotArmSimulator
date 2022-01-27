@@ -440,10 +440,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 966725216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2cda51cf1cbeb644833b1204e691062, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ce59c5f7f339b84cb6e475c32dba8a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   robot: {fileID: 4140136056455461650}
+  gripper: {fileID: 1551411794}
+--- !u!1 &1551411794 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5787449365189863275, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+  m_PrefabInstance: {fileID: 1874760029154655816}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1874760029154655816
 PrefabInstance:
   m_ObjectHideFlags: 0

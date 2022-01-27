@@ -1,11 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Xml.Schema;
 using UnityEngine;
 
 [System.Serializable]
@@ -22,8 +17,9 @@ public class RobotController : MonoBehaviour
 
     public bool IsRobotActivate { get; private set; }
 
-    public JointPoint CurrentPosition
+    public float[] JointAngles
     {
+        
         get
         {
             float[] pPoints = new float[joints.Length];
@@ -35,9 +31,13 @@ public class RobotController : MonoBehaviour
                 pPoints[i] = pJoint.CurrentPosition;
             }
 
-            return new JointPoint(pPoints);
+            return pPoints;
         }
     }
+
+    public JointPoint CurrentJointPos => new JointPoint("CurrentPos", JointAngles);
+
+    public CartesianPoint CurrentCartesianPos => CurrentJointPos.ToCartesianPoint(CommonFactory.RobotKinematics);
 
     public OperationMode ControlMode { get; set; }
 
@@ -112,6 +112,7 @@ public class RobotController : MonoBehaviour
         yield return pTarget switch
         {
             JointPoint pJointPosition => MoveAbsoluteJoints(pJointPosition),
+            CartesianPoint pCartPosition => MoveAbsoluteCartesian(pCartPosition),
             _ => throw new ArgumentOutOfRangeException(nameof(pTarget), pTarget, null)
         };
     }
@@ -126,12 +127,30 @@ public class RobotController : MonoBehaviour
         yield return StartCoroutine(RotateJoints(pTargetPoint.Values, pTargetPoint.FrameCount));
     }
 
+    public IEnumerable MoveAbsoluteCartesian(float fX, float fY, float fZ)
+    {
+        CartesianPoint pTargetPoint = new CartesianPoint("Target", fX, fY, fZ);
+        yield return MoveAbsoluteCartesian(pTargetPoint);
+    }
+
+    public IEnumerable MoveAbsoluteCartesian(float fX, float fY, float fZ, float fRx, float fRy, float fRz)
+    {
+        CartesianPoint pTargetPoint = new CartesianPoint("Target", fX, fY, fZ, fRx, fRy, fRz);
+        yield return MoveAbsoluteCartesian(pTargetPoint);
+    }
+
+    public IEnumerable MoveAbsoluteCartesian(CartesianPoint pTargetPoint)
+    {
+        JointPoint pConvertPoint = pTargetPoint.ToJointPoint(CommonFactory.RobotKinematics);
+        yield return StartCoroutine(RotateJoints(pConvertPoint.Values, pConvertPoint.FrameCount));
+    }
+
     // ReSharper disable Unity.PerformanceAnalysis
     private IEnumerator RotateJoints(float[] pTargetPositions, int nFrameCount, SpeedRule eMode = SpeedRule.Trapezoid)
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
-        if (pTargetPositions.SequenceEqual(CurrentPosition.Values))
+        if (pTargetPositions.SequenceEqual(CurrentJointPos.Values))
         {
             Debug.LogWarning(
                 $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
@@ -156,6 +175,6 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentPosition.Values)}]");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentJointPos.Values)}]");
     }
 }

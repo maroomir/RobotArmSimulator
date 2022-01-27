@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -15,9 +16,9 @@ public class SampleDirector : MonoBehaviour
     private IEnumerator TechnoMotionScript()
     {
         JointPoint pHomePos = JointPoint.Home();
-        JointPoint pInitPos = JointPoint.FromPosition(0.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 180.0F);
-        JointPoint pPos1 = JointPoint.FromPosition(-90.0F, 0.0F, 45.0F, -90.0F, 45.0F, 90.0F, -90.0F);
-        JointPoint pPos2 = JointPoint.FromPosition(90.0F, 0.0F, -45.0F, 90.0F, -45.0F, -90.0F, 90.0F);
+        JointPoint pInitPos = JointPoint.FromPosition("InitPos", 0.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 180.0F);
+        JointPoint pPos1 = JointPoint.FromPosition("Pos1", -90.0F, 0.0F, 45.0F, -90.0F, 45.0F, 90.0F, -90.0F);
+        JointPoint pPos2 = JointPoint.FromPosition("Pos2", 90.0F, 0.0F, -45.0F, 90.0F, -45.0F, -90.0F, 90.0F);
         pInitPos.FrameCount = 100;
         yield return _pRobotControl.Move(pInitPos);
         yield return _pGripperControl.Close();
@@ -31,6 +32,7 @@ public class SampleDirector : MonoBehaviour
             yield return _pRobotControl.Move(pPos1);
             yield return _pRobotControl.Move(pPos2);
         }
+
         yield return _pRobotControl.Move(pHomePos);
         yield return _pGripperControl.Open();
     }
@@ -38,17 +40,20 @@ public class SampleDirector : MonoBehaviour
     public IEnumerator GripperRotateMotionScript()
     {
         JointPoint pHomePos = JointPoint.Home(_nAxisNum);
-        JointPoint pInitPos = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
-        JointPoint pPos1 = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
-        JointPoint pPos2 = JointPoint.FromPosition(180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
+        JointPoint pInitPos = JointPoint.FromPosition("InitPos", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
+        JointPoint pPos1 = JointPoint.FromPosition("Pos1", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
+        JointPoint pPos2 = JointPoint.FromPosition("Pos2", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
+        CartesianPoint pSpan = new CartesianPoint("Span", new Vector3(0.0F, 0.0F, 0.1F));
         pInitPos.FrameCount = 100;
         yield return _pRobotControl.Move(pInitPos);
         for (int i = 0; i < 10; i++)
         {
             yield return _pRobotControl.Move(pPos1);
             yield return _pGripperControl.Close();
+            yield return _pRobotControl.Move(pPos1 + pSpan);
             yield return _pRobotControl.Move(pPos2);
             yield return _pGripperControl.Open();
+            yield return _pRobotControl.Move(pPos2 - pSpan);
         }
 
         yield return _pRobotControl.Move(pInitPos);
@@ -62,7 +67,17 @@ public class SampleDirector : MonoBehaviour
         _pGripperControl = gripper.GetComponent<GripperController>();
         _nAxisNum = _pRobotControl.joints.Length;
         _pRobotControl.ControlMode = OperationMode.Auto;
-        StartCoroutine(TechnoMotionScript());
-        //StartCoroutine(GripperRotateMotionScript());
+        InitCommons();
+
+        //StartCoroutine(TechnoMotionScript());
+        StartCoroutine(GripperRotateMotionScript());
+    }
+
+    private void InitCommons()
+    {
+        GameObject[] pBaseObjects = {robot};
+        GameObject[] pRobotObjects = _pRobotControl.joints.Select(pObj => pObj.robotPart).ToArray();
+        GameObject[] pTotalObjects = pBaseObjects.Grouping(pRobotObjects);
+        CommonFactory.RobotKinematics = new KinematicsCalculator(pTotalObjects);
     }
 }

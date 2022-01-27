@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class TeachingDirector : MonoBehaviour
@@ -37,7 +37,7 @@ public class TeachingDirector : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.KeypadEquals))
         {
-            JointPoint pPoint = _pRobotControl.CurrentPosition;
+            JointPoint pPoint = _pRobotControl.CurrentJointPos;
             pPoint.Name = $"Pos{_nCount}";
             _pListPoints.Add(pPoint);
             _nCount++;

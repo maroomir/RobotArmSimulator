@@ -44,9 +44,9 @@ public class KinematicsCalculator
     public Vector3 BasePosition { get; set; }
     public int Length => Parameters.Length;
 
-    private float _fSampleDistance = 0.0F;
-    private float _fThreshold = 0.0F;
-    private float _fLearningRate = 0.0F;
+    private readonly float _fSampleDistance = 0.0F;
+    private readonly float _fThreshold = 0.0F;
+    private readonly float _fLearningRate = 0.0F;
 
     public KinematicsCalculator(GameObject[] pJoints, float fSampleDistance = 0.1F, float fThreshold = 0.1F, float fLearningRate = 1.0F)
         : this(fSampleDistance, fThreshold, fLearningRate)
@@ -76,7 +76,7 @@ public class KinematicsCalculator
     public Vector3 ForwardKinematics(float[] pAngles)
     {
         if (Length != pAngles.Length)
-            throw new MissingReferenceException("Invalid counter of DH Parameters");
+            throw new MissingReferenceException($"Invalid counter of DH Parameters, Cal={Length}/Input={pAngles.Length}");
         Vector3 pResultPos = BasePosition;
         Quaternion pRotation = Quaternion.identity;
         for (int i = 1; i < Length; i++)
