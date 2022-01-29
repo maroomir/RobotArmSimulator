@@ -43,21 +43,27 @@ public class SampleDirector : MonoBehaviour
         JointPoint pInitPos = JointPoint.FromPosition("InitPos", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
         JointPoint pPos1 = JointPoint.FromPosition("Pos1", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
         JointPoint pPos2 = JointPoint.FromPosition("Pos2", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
-        CartesianPoint pSpan = new CartesianPoint("Span", new Vector3(0.0F, 0.0F, 0.1F));
         pInitPos.FrameCount = 100;
         yield return _pRobotControl.Move(pInitPos);
         for (int i = 0; i < 10; i++)
         {
             yield return _pRobotControl.Move(pPos1);
             yield return _pGripperControl.Close();
-            yield return _pRobotControl.Move(pPos1 + pSpan);
             yield return _pRobotControl.Move(pPos2);
             yield return _pGripperControl.Open();
-            yield return _pRobotControl.Move(pPos2 - pSpan);
         }
 
         yield return _pRobotControl.Move(pInitPos);
         yield return _pRobotControl.Move(pHomePos);
+    }
+
+    public IEnumerator KinematicsTestScript()
+    {
+        JointPoint pHomePos = JointPoint.Home(_nAxisNum);
+        Debug.Log($"Dot : {_pRobotControl.PositionConsistency}");
+        JointPoint pInitPos1 = JointPoint.FromPosition("Init1", 180.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 0.0F);
+        yield return _pRobotControl.Move(pInitPos1);
+        Debug.Log($"Dot : {_pRobotControl.PositionConsistency}");
     }
 
     // Start is called before the first frame update
@@ -70,7 +76,8 @@ public class SampleDirector : MonoBehaviour
         InitCommons();
 
         //StartCoroutine(TechnoMotionScript());
-        StartCoroutine(GripperRotateMotionScript());
+        //StartCoroutine(GripperRotateMotionScript());
+        StartCoroutine(KinematicsTestScript());
     }
 
     private void InitCommons()

@@ -15,6 +15,7 @@ public class KinematicsCalculator
 
         private float SpanAngle(float fAngle)
         {
+            fAngle %= 360.0F;
             return Mathf.Round(fAngle / 90.0F) * 90.0F;
         }
 
@@ -28,9 +29,9 @@ public class KinematicsCalculator
 
         public DHParameter(GameObject pPrevAxis, GameObject pCurrAxis)
         {
-            Vector3 pDistance = pCurrAxis.transform.position - pPrevAxis.transform.position;
             ArticulationBody pPrevBody = pPrevAxis.GetComponent<ArticulationBody>();
             ArticulationBody pCurrBody = pCurrAxis.GetComponent<ArticulationBody>();
+            Vector3 pDistance = pCurrAxis.transform.position - pPrevAxis.transform.position;
             Vector3 pRotation = pCurrBody.anchorRotation.eulerAngles - pPrevBody.anchorRotation.eulerAngles;
             a = pDistance.y;
             alpha = SpanAngle(pRotation.y);
@@ -38,8 +39,8 @@ public class KinematicsCalculator
             theta = SpanAngle(pRotation.z);
         }
 
-        public Vector3 RotationAxis => new Vector3(theta / 90.0F, 0.0F, alpha / 90.0F);
-        public Vector3 Diff => new Vector3(d, 0.0F, a);
+        public Vector3 RotationAxis => new Vector3(0.0F, alpha / 90.0F, theta / 90.0F);
+        public Vector3 Diff => new Vector3(0.0F, a, d);
     }
 
     public DHParameter[] Parameters { get; private set; }

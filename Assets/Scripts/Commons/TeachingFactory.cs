@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using TMPro.SpriteAssetUtilities;
 using UnityEngine;
 
 public class JointPoint : ITeachingPoint
@@ -16,12 +17,6 @@ public class JointPoint : ITeachingPoint
     public JointPoint(string strName)
     {
         Name = strName;
-    }
-
-    public JointPoint(string strName, params float[] pPoints) : this(strName)
-    {
-        AxisNum = pPoints.Length;
-        Values = pPoints;
     }
 
     public static JointPoint Home(int nAxisNum = 7) => new JointPoint("Home")
@@ -210,12 +205,12 @@ public static class TeachingFactory
     public static JointPoint ToJointPoint(this CartesianPoint pSourcePoint, KinematicsCalculator pCalculator)
     {
         float[] pAngles = pCalculator.InverseKinematics(pSourcePoint.Position);
-        return new JointPoint(pSourcePoint.Name, pAngles);
+        return JointPoint.FromPosition(pSourcePoint.Name, pAngles);
     }
 
     public static JointPoint ToJointPoint(this CartesianPoint pSourcePoint, KinematicsCalculator pCalculator, float[] pPrevAngles)
     {
         float[] pAngles = pCalculator.InverseKinematics(pSourcePoint.Position, pPrevAngles);
-        return new JointPoint(pSourcePoint.Name, pAngles);
+        return JointPoint.FromPosition(pSourcePoint.Name, pAngles);
     }
 }

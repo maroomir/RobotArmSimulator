@@ -35,9 +35,20 @@ public class RobotController : MonoBehaviour
         }
     }
 
-    public JointPoint CurrentJointPos => new JointPoint("CurrentPos", JointAngles);
+    public JointPoint CurrentJointPos => JointPoint.FromPosition("CurrentPos", JointAngles);
 
     public CartesianPoint CurrentCartesianPos => CurrentJointPos.ToCartesianPoint(CommonFactory.RobotKinematics);
+
+    public float PositionConsistency
+    {
+        get
+        {
+            Vector3 pCalculatedPos = CurrentCartesianPos.Position;
+            int nToolIndex = joints.Length - 1;
+            Vector3 pRealToolPos = joints[nToolIndex].robotPart.transform.position;
+            return Vector3.Dot(pCalculatedPos, pRealToolPos);
+        }
+    }
 
     public OperationMode ControlMode { get; set; }
 
@@ -106,6 +117,7 @@ public class RobotController : MonoBehaviour
         _pJointStatusFlags[pObject.Index] = false;
         Debug.Log($"[STOP] Joint={pObject.Name} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
+
 
     public IEnumerator Move(ITeachingPoint pTarget)
     {
