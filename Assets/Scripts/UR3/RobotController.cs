@@ -35,20 +35,20 @@ public class RobotController : MonoBehaviour
         }
     }
 
-    public JointPoint CurrentJointPos => JointPoint.FromPosition("CurrentPos", JointAngles);
+    public JointPoint JointPos => JointPoint.FromPosition("CurrentPos", JointAngles);
 
-    public CartesianPoint CurrentCartesianPos => CurrentJointPos.ToCartesianPoint(CommonFactory.RobotKinematics);
+    public CartesianPoint CartesianPos => JointPos.ToCartesianPoint(CommonFactory.RobotKinematics);
 
-    public float PositionConsistency
+    public Vector3 RealEndPos
     {
         get
         {
-            Vector3 pCalculatedPos = CurrentCartesianPos.Position;
             int nToolIndex = joints.Length - 1;
-            Vector3 pRealToolPos = joints[nToolIndex].robotPart.transform.position;
-            return Vector3.Dot(pCalculatedPos, pRealToolPos);
+            return joints[nToolIndex].robotPart.transform.position;
         }
     }
+
+    public float PositionConsistency => CartesianPos.Position.sqrMagnitude / RealEndPos.sqrMagnitude;
 
     public OperationMode ControlMode { get; set; }
 
@@ -162,7 +162,7 @@ public class RobotController : MonoBehaviour
     {
         if (joints?.Length != pTargetPositions.Length) yield break;
         Debug.Log($"Move the absolute joint position [{string.Join(",", pTargetPositions)}]");
-        if (pTargetPositions.SequenceEqual(CurrentJointPos.Values))
+        if (pTargetPositions.SequenceEqual(JointPos.Values))
         {
             Debug.LogWarning(
                 $"The target position is the same as current position [{string.Join(",", pTargetPositions)}]");
@@ -187,6 +187,6 @@ public class RobotController : MonoBehaviour
         yield return new WaitUntil(() => IsRobotActivate);
         yield return new WaitUntil(() => _pJointStatusFlags.All(bFlag => !bFlag));
         ExitRobot();
-        Debug.Log($"Exit the absolute move, current = [{string.Join(",", CurrentJointPos.Values)}]");
+        Debug.Log($"Exit the absolute move, current = [{string.Join(",", JointPos.Values)}]");
     }
 }

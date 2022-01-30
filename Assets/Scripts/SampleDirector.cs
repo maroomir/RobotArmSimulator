@@ -60,10 +60,24 @@ public class SampleDirector : MonoBehaviour
     public IEnumerator KinematicsTestScript()
     {
         JointPoint pHomePos = JointPoint.Home(_nAxisNum);
-        Debug.Log($"Dot : {_pRobotControl.PositionConsistency}");
+        Debug.Log($"Rate={_pRobotControl.PositionConsistency}, " + 
+                  $"Real=({_pRobotControl.RealEndPos.x:F6}, {_pRobotControl.RealEndPos.y:F6}, {_pRobotControl.RealEndPos.z:F6}), " + 
+                  $"Estimated=({_pRobotControl.CartesianPos.X:F6}, {_pRobotControl.CartesianPos.Y:F6}, {_pRobotControl.CartesianPos.Z:F6})");
         JointPoint pInitPos1 = JointPoint.FromPosition("Init1", 180.0F, 0.0F, 90.0F, 90.0F, 0.0F, 0.0F, 0.0F);
         yield return _pRobotControl.Move(pInitPos1);
-        Debug.Log($"Dot : {_pRobotControl.PositionConsistency}");
+        Debug.Log($"Rate={_pRobotControl.PositionConsistency}, " + 
+                  $"Real=({_pRobotControl.RealEndPos.x:F6}, {_pRobotControl.RealEndPos.y:F6}, {_pRobotControl.RealEndPos.z:F6}), " + 
+                  $"Estimated=({_pRobotControl.CartesianPos.X:F6}, {_pRobotControl.CartesianPos.Y:F6}, {_pRobotControl.CartesianPos.Z:F6})");
+        JointPoint pInitPos2 = JointPoint.FromPosition("Init2", -180.0F, 0.0F, 90.0F, 90.0F, 30.0F, 30.0F, 30.0F);
+        yield return _pRobotControl.Move(pInitPos2);
+        Debug.Log($"Rate={_pRobotControl.PositionConsistency}, " + 
+                  $"Real=({_pRobotControl.RealEndPos.x:F6}, {_pRobotControl.RealEndPos.y:F6}, {_pRobotControl.RealEndPos.z:F6}), " + 
+                  $"Estimated=({_pRobotControl.CartesianPos.X:F6}, {_pRobotControl.CartesianPos.Y:F6}, {_pRobotControl.CartesianPos.Z:F6})");
+        JointPoint pInitPos3 = JointPoint.FromPosition("Init3", -90.0F, 0.0F, 45.0F, -90.0F, 45.0F, 90.0F, -90.0F);
+        yield return _pRobotControl.Move(pInitPos3);
+        Debug.Log($"Rate={_pRobotControl.PositionConsistency}, " + 
+                  $"Real=({_pRobotControl.RealEndPos.x:F6}, {_pRobotControl.RealEndPos.y:F6}, {_pRobotControl.RealEndPos.z:F6}), " + 
+                  $"Estimated=({_pRobotControl.CartesianPos.X:F6}, {_pRobotControl.CartesianPos.Y:F6}, {_pRobotControl.CartesianPos.Z:F6})");
     }
 
     // Start is called before the first frame update

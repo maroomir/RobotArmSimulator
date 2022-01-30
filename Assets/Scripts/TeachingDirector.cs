@@ -37,7 +37,7 @@ public class TeachingDirector : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.KeypadEquals))
         {
-            JointPoint pPoint = _pRobotControl.CurrentJointPos;
+            JointPoint pPoint = _pRobotControl.JointPos;
             pPoint.Name = $"Pos{_nCount}";
             _pListPoints.Add(pPoint);
             _nCount++;

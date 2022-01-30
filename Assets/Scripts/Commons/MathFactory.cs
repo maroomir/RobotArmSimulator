@@ -5,42 +5,57 @@ public class KinematicsCalculator
     public class DHParameter
     {
         // Distance of the Y(Z)-axis based on the Z(X)-axis
-        public float a = 0;
+        public float A => _fDistanceY;
         // Rotation angle on the Y(Z)-axis based on the Z(X)-axis
-        public float alpha = 0;
+        public float Alpha => _fAnchorThetaZ;
         // Distance of the Z(X)-axis based on the Y(Z)-axis
-        public float d = 0;
+        public float D => _fDistanceZ;
         // Rotation angle on the Z(X)-axis based on the Y(Z)-axis
-        public float theta = 0;
+        public float Theta => _fAnchorThetaX;
+        
+        public Vector3 AnchorAxis => new Vector3(0.0F, _fAnchorThetaY / 90.0F, _fAnchorThetaZ / 90.0F);
 
-        private float SpanAngle(float fAngle)
-        {
-            fAngle %= 360.0F;
-            return Mathf.Round(fAngle / 90.0F) * 90.0F;
-        }
-
+        public Vector3 RotationAxis => new Vector3(0.0F, _fAnchorThetaZ / 90.0F, _fAnchorThetaX / 90.0F);
+        
+        public Vector3 Diff => new Vector3(0.0F, _fDistanceY, _fDistanceZ);
+        
+        // The variable needed to use the DH Parameter in Unity Environment
+        private float _fDistanceY = 0;
+        private float _fDistanceZ = 0;
+        private float _fAnchorThetaX = 0;
+        private float _fAnchorThetaY = 0;
+        private float _fAnchorThetaZ = 0;
+        
         public DHParameter(float fA, float fAlpha, float fD, float fTheta)
         {
-            a = fA;
-            alpha = SpanAngle(fAlpha);
-            d = fD;
-            theta = SpanAngle(fTheta);
+            _fDistanceY = fA;
+            _fAnchorThetaY = NormalizeAngle(fAlpha);
+            _fDistanceZ = fD;
+            _fAnchorThetaZ = NormalizeAngle(fTheta);
         }
 
         public DHParameter(GameObject pPrevAxis, GameObject pCurrAxis)
         {
-            ArticulationBody pPrevBody = pPrevAxis.GetComponent<ArticulationBody>();
             ArticulationBody pCurrBody = pCurrAxis.GetComponent<ArticulationBody>();
             Vector3 pDistance = pCurrAxis.transform.position - pPrevAxis.transform.position;
-            Vector3 pRotation = pCurrBody.anchorRotation.eulerAngles - pPrevBody.anchorRotation.eulerAngles;
-            a = pDistance.y;
-            alpha = SpanAngle(pRotation.y);
-            d = pDistance.z;
-            theta = SpanAngle(pRotation.z);
+            Vector3 pRotation = pCurrBody.anchorRotation.eulerAngles;
+            _fAnchorThetaX = NormalizeAngle(pRotation.x);
+            _fDistanceY = pDistance.y;
+            _fAnchorThetaY = NormalizeAngle(pRotation.y);
+            _fDistanceZ = pDistance.z;
+            _fAnchorThetaZ = NormalizeAngle(pRotation.z);
         }
-
-        public Vector3 RotationAxis => new Vector3(0.0F, alpha / 90.0F, theta / 90.0F);
-        public Vector3 Diff => new Vector3(0.0F, a, d);
+        
+        private float NormalizeAngle(float fAngle)
+        {
+            // Normalize the angle in the circle
+            fAngle %= 360.0F;
+            // Fit the angle in to the half-range
+            fAngle = Mathf.Round(fAngle / 90.0F) * 90.0F;
+            fAngle = fAngle < 0 ? 360.0F + fAngle : fAngle;
+            fAngle = fAngle >= 180.0F ? 180.0F - fAngle : fAngle;
+            return fAngle;
+        }
     }
 
     public DHParameter[] Parameters { get; private set; }
@@ -74,18 +89,27 @@ public class KinematicsCalculator
         _fThreshold = fThreshold;
     }
 
-    public Vector3 ForwardKinematics(float[] pAngles)
+    public Vector3 ForwardKinematics(float[] pAngles, bool bTrace = true)
     {
         if (Length != pAngles.Length)
-            throw new MissingReferenceException($"Invalid counter of DH Parameters, Cal={Length}/Input={pAngles.Length}");
-        Vector3 pResultPos = BasePosition;
+            throw new MissingReferenceException(
+                $"Invalid counter of DH Parameters, Cal={Length}/Input={pAngles.Length}");
+        // Add the robot base height when initialized positions 
+        Vector3 pResultPos = BasePosition + Parameters[0].Diff;
         Quaternion pRotation = Quaternion.identity;
+        if (bTrace) Debug.Log($"[MATH][FK] i=0, Pos=({pResultPos.x:F4}, {pResultPos.y:F4}, {pResultPos.z:F4})");
         for (int i = 1; i < Length; i++)
         {
             pRotation *= Quaternion.AngleAxis(pAngles[i - 1], Parameters[i - 1].RotationAxis);
             Vector3 pNextPos = pResultPos + pRotation * Parameters[i].Diff;
             pResultPos = pNextPos;
+            if (bTrace)
+                Debug.Log($"[MATH][FK] i={i}, " +
+                          $"Rot=({Parameters[i - 1].RotationAxis.x:F1}, {Parameters[i - 1].RotationAxis.y:F1},{Parameters[i - 1].RotationAxis.z:F1}), " +
+                          $"Diff=({Parameters[i - 1].Diff.x:F6}, {Parameters[i - 1].Diff.y:F6}, {Parameters[i - 1].Diff.z:F6}), " +
+                          $"Pos=({pResultPos.x:F6}, {pResultPos.y:F6}, {pResultPos.z:F6})");
         }
+
         return pResultPos;
     }
 
