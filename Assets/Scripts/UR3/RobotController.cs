@@ -48,7 +48,14 @@ public class RobotController : MonoBehaviour
         }
     }
 
-    public float PositionConsistency => CartesianPos.Position.sqrMagnitude / RealEndPos.sqrMagnitude;
+    public float KinematicsAccuracy
+    {
+        get
+        {
+            Vector3 pDiff = CartesianPos.Position - RealEndPos;
+            return pDiff.magnitude;
+        }
+    }
 
     public OperationMode ControlMode { get; set; }
 

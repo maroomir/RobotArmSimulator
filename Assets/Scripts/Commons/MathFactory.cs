@@ -11,27 +11,27 @@ public class KinematicsCalculator
         // Distance of the Z(X)-axis based on the Y(Z)-axis
         public float D => _fDistanceZ;
         // Rotation angle on the Z(X)-axis based on the Y(Z)-axis
-        public float Theta => _fAnchorThetaX;
+        public float Theta => -_fAnchorThetaY;
         
         public Vector3 AnchorAxis => new Vector3(0.0F, _fAnchorThetaY / 90.0F, _fAnchorThetaZ / 90.0F);
 
-        public Vector3 RotationAxis => new Vector3(0.0F, _fAnchorThetaZ / 90.0F, _fAnchorThetaX / 90.0F);
+        public Vector3 RotationAxis => new Vector3(0.0F, _fAnchorThetaZ / 90.0F, -_fAnchorThetaY / 90.0F);
         
         public Vector3 Diff => new Vector3(0.0F, _fDistanceY, _fDistanceZ);
         
         // The variable needed to use the DH Parameter in Unity Environment
         private float _fDistanceY = 0;
         private float _fDistanceZ = 0;
-        private float _fAnchorThetaX = 0;
         private float _fAnchorThetaY = 0;
         private float _fAnchorThetaZ = 0;
         
         public DHParameter(float fA, float fAlpha, float fD, float fTheta)
         {
+            // As a result of handwriting for proving the DH-parameters
             _fDistanceY = fA;
-            _fAnchorThetaY = NormalizeAngle(fAlpha);
+            _fAnchorThetaY = -NormalizeAngle(fTheta);
             _fDistanceZ = fD;
-            _fAnchorThetaZ = NormalizeAngle(fTheta);
+            _fAnchorThetaZ = NormalizeAngle(fAlpha);
         }
 
         public DHParameter(GameObject pPrevAxis, GameObject pCurrAxis)
@@ -39,7 +39,6 @@ public class KinematicsCalculator
             ArticulationBody pCurrBody = pCurrAxis.GetComponent<ArticulationBody>();
             Vector3 pDistance = pCurrAxis.transform.position - pPrevAxis.transform.position;
             Vector3 pRotation = pCurrBody.anchorRotation.eulerAngles;
-            _fAnchorThetaX = NormalizeAngle(pRotation.x);
             _fDistanceY = pDistance.y;
             _fAnchorThetaY = NormalizeAngle(pRotation.y);
             _fDistanceZ = pDistance.z;
