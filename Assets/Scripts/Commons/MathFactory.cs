@@ -64,7 +64,7 @@ public class KinematicsCalculator
     private readonly float _fSampleDistance;
     private readonly float _fThreshold;
 
-    public KinematicsCalculator(GameObject[] pJoints, float fSampleDistance = 0.1F, float fThreshold = 0.1F)
+    public KinematicsCalculator(GameObject[] pJoints, float fSampleDistance = 0.1F, float fThreshold = 0.01F)
         : this(fSampleDistance, fThreshold)
     {
         int nLength = pJoints.Length - 1;
@@ -76,7 +76,7 @@ public class KinematicsCalculator
         }
     }
 
-    public KinematicsCalculator(DHParameter[] pParams, float fSampleDistance = 0.1F, float fThreshold = 0.1F)
+    public KinematicsCalculator(DHParameter[] pParams, float fSampleDistance = 0.1F, float fThreshold = 0.01F)
         : this(fSampleDistance, fThreshold)
     {
         Parameters = pParams;
@@ -88,7 +88,7 @@ public class KinematicsCalculator
         _fThreshold = fThreshold;
     }
 
-    public Vector3 ForwardKinematics(float[] pAngles, bool bTrace = true)
+    public Vector3 ForwardKinematics(float[] pAngles, bool bTrace = false)
     {
         if (Length != pAngles.Length)
             throw new MissingReferenceException(
@@ -112,20 +112,15 @@ public class KinematicsCalculator
         return pResultPos;
     }
 
-    public float[] InverseKinematics(Vector3 pInput)
-    {
-        return InverseKinematics(pInput, new float[Length]);
-    }
-
     public float[] InverseKinematics(Vector3 pInput, float[] pPrevAngles)
     {
         if (Length != pPrevAngles.Length)
             throw new MissingReferenceException("Invalid counter of DH Parameters");
-        float[] pResults = pPrevAngles;
+        float[] pResults = pPrevAngles.Clone() as float[];
         while (true)
         {
             for (int i = 0; i < Length; i++)
-                pResults[i] += (float)PartialGradient(pInput, i, pResults);
+                pResults[i] -= (float)PartialGradient(pInput, i, pResults);
             if(PartialDistance(pInput, pResults) <= _fThreshold)
                 break;
         }

@@ -77,7 +77,7 @@ public static class CommonFactory
     {
         float[] pResultArray = new float[pArray1.Length];
         for (int i = 0; i < pResultArray.Length; i++)
-            pResultArray[i] = pArray1[i] + pArray2[i];
+            pResultArray[i] = pArray1[i] - pArray2[i];
         return pResultArray;
     }
 

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using TMPro.SpriteAssetUtilities;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class JointPoint : ITeachingPoint
 {
@@ -17,6 +18,13 @@ public class JointPoint : ITeachingPoint
     public JointPoint(string strName)
     {
         Name = strName;
+    }
+
+    public JointPoint(string strName, int nFrameCount, params float[] args) : this(strName)
+    {
+        FrameCount = nFrameCount;
+        Values = args.Clone() as float[];
+        AxisNum = args.Length;
     }
 
     public static JointPoint Home(int nAxisNum = 7) => new JointPoint("Home")
@@ -48,7 +56,7 @@ public class JointPoint : ITeachingPoint
     public static JointPoint operator +(JointPoint pPoint1, JointPoint pPoint2) =>
         new JointPoint($"{pPoint1.Name}+{pPoint2.Name}")
         {
-            FrameCount = pPoint1.FrameCount,
+            FrameCount = pPoint2.FrameCount,
             Values = pPoint1.Values.AddByElement(pPoint2.Values),
             AxisNum = pPoint1.AxisNum
         };
@@ -63,7 +71,7 @@ public class JointPoint : ITeachingPoint
     public static JointPoint operator -(JointPoint pPoint1, JointPoint pPoint2) =>
         new JointPoint($"{pPoint1.Name}-{pPoint2.Name}")
         {
-            FrameCount = pPoint1.FrameCount,
+            FrameCount = pPoint2.FrameCount,
             Values = pPoint1.Values.SubtractByElement(pPoint2.Values),
             AxisNum = pPoint1.AxisNum
         };
@@ -101,8 +109,13 @@ public class CartesianPoint : ITeachingPoint
         Name = strName;
     }
 
-    public CartesianPoint(string strName, params float[] pPoints) : this(strName)
+    public CartesianPoint(string strName, params float[] pPoints) : this(strName, 10, pPoints)
     {
+    }
+
+    public CartesianPoint(string strName, int nFrameCount, params float[] pPoints) : this(strName)
+    {
+        FrameCount = nFrameCount;
         int nLength = pPoints.Length;
         switch (nLength)
         {
@@ -121,13 +134,13 @@ public class CartesianPoint : ITeachingPoint
         }
     }
 
-    public CartesianPoint(string strName, Vector3 pPosition) :
-        this(strName, pPosition.x, pPosition.y, pPosition.z)
+    public CartesianPoint(string strName, int nFrameCount, Vector3 pPosition) :
+        this(strName, nFrameCount, pPosition.x, pPosition.y, pPosition.z)
     {
     }
-
-    public CartesianPoint(string strName, Vector3 pPosition, Vector3 pRotation) :
-        this(strName, pPosition.x, pPosition.y, pPosition.z, pRotation.x, pRotation.y, pRotation.z)
+    
+    public CartesianPoint(string strName, int nFrameCount, Vector3 pPosition, Vector3 pRotation) :
+        this(strName, nFrameCount, pPosition.x, pPosition.y, pPosition.z, pRotation.x, pRotation.y, pRotation.z)
     {
     }
 
@@ -143,32 +156,18 @@ public class CartesianPoint : ITeachingPoint
         return $"[CART]{Name}=" + string.Join(',', Values);
     }
 
-    public static CartesianPoint operator +(CartesianPoint pPoint1, JointPoint pPoint2)
-    {
-        JointPoint pJointPoint1 = pPoint1.ToJointPoint(CommonFactory.RobotKinematics);
-        JointPoint pResultPoint = pJointPoint1 + pPoint2;
-        return pResultPoint.ToCartesianPoint(CommonFactory.RobotKinematics);
-    }
-
     public static CartesianPoint operator +(CartesianPoint pPoint1, CartesianPoint pPoint2) =>
         new CartesianPoint($"{pPoint1.Name}+{pPoint2.Name}")
         {
-            FrameCount = pPoint1.FrameCount,
+            FrameCount = pPoint2.FrameCount,
             Values = pPoint1.Values.AddByElement(pPoint2.Values),
             AxisNum = pPoint1.AxisNum
         };
 
-    public static CartesianPoint operator -(CartesianPoint pPoint1, JointPoint pPoint2)
-    {
-        JointPoint pJointPoint1 = pPoint1.ToJointPoint(CommonFactory.RobotKinematics);
-        JointPoint pResultPoint = pJointPoint1 - pPoint2;
-        return pResultPoint.ToCartesianPoint(CommonFactory.RobotKinematics);
-    }
-
     public static CartesianPoint operator -(CartesianPoint pPoint1, CartesianPoint pPoint2) =>
         new CartesianPoint($"{pPoint1.Name}-{pPoint2.Name}")
         {
-            FrameCount = pPoint1.FrameCount,
+            FrameCount = pPoint2.FrameCount,
             Values = pPoint1.Values.SubtractByElement(pPoint2.Values),
             AxisNum = pPoint1.AxisNum
         };
@@ -199,18 +198,13 @@ public static class TeachingFactory
     public static CartesianPoint ToCartesianPoint(this JointPoint pSourcePoint, KinematicsCalculator pCalculator)
     {
         Vector3 pPos = pCalculator.ForwardKinematics(pSourcePoint.Values);
-        return new CartesianPoint(pSourcePoint.Name, pPos);
+        return new CartesianPoint(pSourcePoint.Name, pSourcePoint.FrameCount, pPos);
     }
 
-    public static JointPoint ToJointPoint(this CartesianPoint pSourcePoint, KinematicsCalculator pCalculator)
-    {
-        float[] pAngles = pCalculator.InverseKinematics(pSourcePoint.Position);
-        return JointPoint.FromPosition(pSourcePoint.Name, pAngles);
-    }
-
-    public static JointPoint ToJointPoint(this CartesianPoint pSourcePoint, KinematicsCalculator pCalculator, float[] pPrevAngles)
+    public static JointPoint ToJointPoint(this CartesianPoint pSourcePoint, KinematicsCalculator pCalculator,
+        float[] pPrevAngles)
     {
         float[] pAngles = pCalculator.InverseKinematics(pSourcePoint.Position, pPrevAngles);
-        return JointPoint.FromPosition(pSourcePoint.Name, pAngles);
+        return new JointPoint(pSourcePoint.Name, pSourcePoint.AxisNum, pAngles);
     }
 }

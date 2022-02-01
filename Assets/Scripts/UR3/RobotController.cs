@@ -131,7 +131,6 @@ public class RobotController : MonoBehaviour
         yield return pTarget switch
         {
             JointPoint pJointPosition => MoveAbsoluteJoints(pJointPosition),
-            CartesianPoint pCartPosition => MoveAbsoluteCartesian(pCartPosition),
             _ => throw new ArgumentOutOfRangeException(nameof(pTarget), pTarget, null)
         };
     }
@@ -144,24 +143,6 @@ public class RobotController : MonoBehaviour
     public IEnumerator MoveAbsoluteJoints(JointPoint pTargetPoint)
     {
         yield return StartCoroutine(RotateJoints(pTargetPoint.Values, pTargetPoint.FrameCount));
-    }
-
-    public IEnumerable MoveAbsoluteCartesian(float fX, float fY, float fZ)
-    {
-        CartesianPoint pTargetPoint = new CartesianPoint("Target", fX, fY, fZ);
-        yield return MoveAbsoluteCartesian(pTargetPoint);
-    }
-
-    public IEnumerable MoveAbsoluteCartesian(float fX, float fY, float fZ, float fRx, float fRy, float fRz)
-    {
-        CartesianPoint pTargetPoint = new CartesianPoint("Target", fX, fY, fZ, fRx, fRy, fRz);
-        yield return MoveAbsoluteCartesian(pTargetPoint);
-    }
-
-    public IEnumerable MoveAbsoluteCartesian(CartesianPoint pTargetPoint)
-    {
-        JointPoint pConvertPoint = pTargetPoint.ToJointPoint(CommonFactory.RobotKinematics);
-        yield return StartCoroutine(RotateJoints(pConvertPoint.Values, pConvertPoint.FrameCount));
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
