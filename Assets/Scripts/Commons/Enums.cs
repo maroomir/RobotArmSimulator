@@ -16,3 +16,13 @@ public enum BreakStatus
     Release = 0,
     Hold,
 }
+
+public enum TrimMode
+{
+    Integer = 0,
+    Binary,
+    Pentagram,
+    Decimal,
+    QuadrantAngle,
+    HalfAngle,
+}

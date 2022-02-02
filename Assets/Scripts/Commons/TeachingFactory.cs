@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using TMPro.SpriteAssetUtilities;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -48,9 +49,34 @@ public class JointPoint : ITeachingPoint
         Values = Values.Clone() as float[]
     };
 
+    public void Trim(TrimMode eMode = TrimMode.Pentagram)
+    {
+        for (int i = 0; i < AxisNum; i++)
+        {
+            Values[i] %= 360.0F;
+            Values[i] = eMode switch
+            {
+                TrimMode.Integer => (int) Values[i] * 1.0F,
+                TrimMode.Binary => (int) (Values[i] / 2.0F) * 2.0F,
+                TrimMode.Pentagram => (int) (Values[i] / 5.0F) * 5.0F,
+                TrimMode.Decimal => (int) (Values[i] / 10.0F) * 10.0F,
+                TrimMode.QuadrantAngle => (int) (Values[i] / 45.0F) * 45.0F,
+                TrimMode.HalfAngle => (int) (Values[i] / 90.0F) * 90.0F,
+                _ => Values[i]
+            };
+        }
+    }
+
     public string Print()
     {
-        return $"[JOINT]{Name}=" + string.Join(',', Values);
+        string strResult = "";
+        for (int i = 0; i < AxisNum; i++)
+        {
+            strResult += $"J{i:D1}:{Values[i]:F2}";
+            if (i < AxisNum - 1) strResult += ",";
+        }
+
+        return $"{Name}=({strResult})";
     }
 
     public static JointPoint operator +(JointPoint pPoint1, JointPoint pPoint2) =>
@@ -129,8 +155,6 @@ public class CartesianPoint : ITeachingPoint
                 Values = new float[AxisNum];
                 Array.Copy(pPoints, Values, AxisNum);
                 break;
-            default:
-                break;
         }
     }
 
@@ -153,7 +177,7 @@ public class CartesianPoint : ITeachingPoint
 
     public string Print()
     {
-        return $"[CART]{Name}=" + string.Join(',', Values);
+        return $"{Name}=(X:{X:F2},Y:{Y:F2},Z{Z:F2})";
     }
 
     public static CartesianPoint operator +(CartesianPoint pPoint1, CartesianPoint pPoint2) =>
@@ -175,7 +199,7 @@ public class CartesianPoint : ITeachingPoint
 
 public static class TeachingFactory
 {
-    public static void SaveTeachingPoints(List<ITeachingPoint> pPoints, string strPath)
+    public static void SaveTeachingPoints(Dictionary<string, JointPoint> pPoints, string strPath)
     {
         if (!CommonFactory.VerifyFilePath(strPath))
         {
@@ -190,7 +214,7 @@ public static class TeachingFactory
         }
     }
 
-    public static ITeachingPoint[] LoadTeachingPoints(string strPath)
+    public static JointPoint[] LoadTeachingPoints(string strPath)
     {
         throw new NotSupportedException();
     }

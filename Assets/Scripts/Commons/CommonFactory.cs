@@ -64,6 +64,14 @@ public static class CommonFactory
                 return eKey;
         return KeyCode.None;
     }
+    
+    public static KeyCode GetInputKeyDown(IEnumerable<KeyCode> pObserves)
+    {
+        foreach (KeyCode eKey in pObserves)
+            if (Input.GetKeyDown(eKey))
+                return eKey;
+        return KeyCode.None;
+    }
 
     public static KeyCode[] GetInputKeys(IEnumerable<KeyCode> pObserves)
     {

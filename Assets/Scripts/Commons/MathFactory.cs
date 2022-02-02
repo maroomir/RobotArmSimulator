@@ -124,6 +124,8 @@ public class KinematicsCalculator
                 pResults[j] -= (float) PartialGradient(pInput, j, pResults);
             if (PartialDistance(pInput, pResults) <= _fThreshold)
                 break;
+            if(i == _nMaxIterCount - 1)
+                Debug.LogWarning($"Failed at Inverse Kinematics (the robot cannot reach)");
         }
 
         return pResults;
