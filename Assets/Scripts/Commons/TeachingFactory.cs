@@ -205,6 +205,6 @@ public static class TeachingFactory
         float[] pPrevAngles)
     {
         float[] pAngles = pCalculator.InverseKinematics(pSourcePoint.Position, pPrevAngles);
-        return new JointPoint(pSourcePoint.Name, pSourcePoint.AxisNum, pAngles);
+        return new JointPoint(pSourcePoint.Name, pSourcePoint.FrameCount, pAngles);
     }
 }

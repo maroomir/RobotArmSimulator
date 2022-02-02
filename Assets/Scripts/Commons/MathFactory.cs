@@ -63,8 +63,9 @@ public class KinematicsCalculator
 
     private readonly float _fSampleDistance;
     private readonly float _fThreshold;
+    private readonly int _nMaxIterCount = 1000;
 
-    public KinematicsCalculator(GameObject[] pJoints, float fSampleDistance = 0.1F, float fThreshold = 0.01F)
+    public KinematicsCalculator(GameObject[] pJoints, float fSampleDistance = 0.1F, float fThreshold = 0.001F)
         : this(fSampleDistance, fThreshold)
     {
         int nLength = pJoints.Length - 1;
@@ -76,13 +77,13 @@ public class KinematicsCalculator
         }
     }
 
-    public KinematicsCalculator(DHParameter[] pParams, float fSampleDistance = 0.1F, float fThreshold = 0.01F)
+    public KinematicsCalculator(DHParameter[] pParams, float fSampleDistance = 0.1F, float fThreshold = 0.001F)
         : this(fSampleDistance, fThreshold)
     {
         Parameters = pParams;
     }
 
-    public KinematicsCalculator(float fSampleDistance = 0.1F, float fThreshold = 0.1F)
+    public KinematicsCalculator(float fSampleDistance = 0.1F, float fThreshold = 0.001F)
     {
         _fSampleDistance = fSampleDistance;
         _fThreshold = fThreshold;
@@ -117,13 +118,14 @@ public class KinematicsCalculator
         if (Length != pPrevAngles.Length)
             throw new MissingReferenceException("Invalid counter of DH Parameters");
         float[] pResults = pPrevAngles.Clone() as float[];
-        while (true)
+        for (int i = 0; i < _nMaxIterCount; i++)
         {
-            for (int i = 0; i < Length; i++)
-                pResults[i] -= (float)PartialGradient(pInput, i, pResults);
-            if(PartialDistance(pInput, pResults) <= _fThreshold)
+            for (int j = 0; j < Length; j++)
+                pResults[j] -= (float) PartialGradient(pInput, j, pResults);
+            if (PartialDistance(pInput, pResults) <= _fThreshold)
                 break;
         }
+
         return pResults;
     }
 

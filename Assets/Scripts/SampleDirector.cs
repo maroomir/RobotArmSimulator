@@ -43,7 +43,9 @@ public class SampleDirector : MonoBehaviour
         JointPoint pInitPos = JointPoint.FromPosition("InitPos", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 0.0F, 0.0F);
         JointPoint pPos1 = JointPoint.FromPosition("Pos1", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, 90.0F);
         JointPoint pPos2 = JointPoint.FromPosition("Pos2", 180.0F, 0.0F, 90.0F, 90.0F, 90.0F, 180.0F, -90.0F);
-        CartesianPoint pSpan = new CartesianPoint("Span", 100, 0.0F, 0.1F, 0.0F);
+        CartesianPoint pSpanX = new CartesianPoint("Span", 10, 0.1F, 0.0F, 0.0F);
+        CartesianPoint pSpanY = new CartesianPoint("Span", 10, 0.0F, 0.1F, 0.0F);
+        CartesianPoint pSpanZ = new CartesianPoint("Span", 10, 0.0F, 0.0F, 0.1F);
         pInitPos.FrameCount = 100;
         yield return _pRobotControl.Move(pInitPos);
         for (int i = 0; i < 10; i++)
@@ -53,11 +55,18 @@ public class SampleDirector : MonoBehaviour
             yield return new WaitForSeconds(1);
             for (int j = 0; j < 10; j++)
             {
-                yield return _pRobotControl.Move(pPos1 + pSpan);
-                yield return _pRobotControl.Move(pPos1 - pSpan);
+                yield return _pRobotControl.Move(pPos1 + pSpanX);
+                yield return _pRobotControl.Move(pPos1 - pSpanX);
+                yield return _pRobotControl.Move(pPos1);
+                yield return _pRobotControl.Move(pPos1 + pSpanY);
+                yield return _pRobotControl.Move(pPos1 - pSpanY);
+                yield return _pRobotControl.Move(pPos1);
+                yield return _pRobotControl.Move(pPos1 + pSpanZ);
+                yield return _pRobotControl.Move(pPos1 - pSpanZ);
+                yield return _pRobotControl.Move(pPos1);
             }
-            yield return _pGripperControl.Open();
             yield return _pRobotControl.Move(pPos2);
+            yield return _pGripperControl.Open();
         }
 
         yield return _pRobotControl.Move(pInitPos);

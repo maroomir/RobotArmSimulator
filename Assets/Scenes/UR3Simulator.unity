@@ -440,16 +440,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 966725216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ce59c5f7f339b84cb6e475c32dba8a7, type: 3}
+  m_Script: {fileID: 11500000, guid: e2cda51cf1cbeb644833b1204e691062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   robot: {fileID: 4140136056455461650}
-  gripper: {fileID: 1551411794}
---- !u!1 &1551411794 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5787449365189863275, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
-  m_PrefabInstance: {fileID: 1874760029154655816}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1874760029154655816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -459,11 +453,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2553764870828772222, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_ParentAnchorPosition.y
-      value: 11.505004
+      value: 11.505003
       objectReference: {fileID: 0}
     - target: {fileID: 2553764870828772222, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -1.3913976
+      value: -1.3913975
       objectReference: {fileID: 0}
     - target: {fileID: 2553764870836012371, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_RootOrder
@@ -599,11 +593,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2553764870976646633, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_ParentAnchorPosition.y
-      value: 11.505004
+      value: 11.505003
       objectReference: {fileID: 0}
     - target: {fileID: 2553764870976646633, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: 1.3914006
+      value: 1.3914005
       objectReference: {fileID: 0}
     - target: {fileID: 7352829323749184890, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
       propertyPath: fingers.Array.data[0].openLimit

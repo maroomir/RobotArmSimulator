@@ -8,7 +8,6 @@ public struct JointInfo
 {
     public string inputAxis;
     public GameObject robotPart;
-    public KeyCode key;
 }
 
 public class RobotController : MonoBehaviour
@@ -65,21 +64,59 @@ public class RobotController : MonoBehaviour
     private void Start()
     {
         _pJointStatusFlags = new bool[joints.Length];
+        for (int i = 0; i < joints.Length; i++)
+        {
+            GameObject pPart = joints[i].robotPart;
+            JointController pJoint = pPart.GetComponent<JointController>();
+            if (pJoint is null) continue;
+            pJoint.Index = i;
+            pJoint.Name = joints[i].inputAxis;
+        }
     }
 
     // Update is called on every frames
     private void Update()
     {
-        if (ControlMode == OperationMode.Teaching)
+        if (ControlMode != OperationMode.Teaching) return;
+
+        if (CommonFactory.IsInputKeys(new[] {KeyCode.X, KeyCode.Y, KeyCode.Z}))
+            StartCoroutine(PartialMovement(CommonFactory.GetInputKey(new[] {KeyCode.X, KeyCode.Y, KeyCode.Z})));
+        else
         {
             for (int i = 0; i < joints.Length; i++)
             {
                 GameObject pPart = joints[i].robotPart;
                 JointController pJoint = pPart.GetComponent<JointController>();
-                pJoint.ControlMode = Input.GetKey(joints[i].key) ? OperationMode.Teaching : OperationMode.Auto;
+                pJoint.ControlMode = Input.GetKey($"{pJoint.Index + 1}") ? OperationMode.Teaching : OperationMode.Auto;
                 pJoint.Break = (pJoint.ControlMode == OperationMode.Teaching) ? BreakStatus.Release : BreakStatus.Hold;
             }
         }
+    }
+
+    private IEnumerator PartialMovement(KeyCode eCommand, float fStep = 0.01F, int nFrameCount = 5, bool bTrace = true)
+    {
+        float[] pMovements = new[] {0.0F, 0.0F, 0.0F};
+        pMovements = eCommand switch
+        {
+            KeyCode.X => Input.GetKeyDown(KeyCode.LeftArrow) ? new[] {-fStep, 0.0F, 0.0F} :
+                Input.GetKeyDown(KeyCode.RightArrow) ? new[] {fStep, 0.0F, 0.0F} : pMovements,
+            KeyCode.Y => Input.GetKeyDown(KeyCode.LeftArrow) ? new[] {0.0F, -fStep, 0.0F} :
+                Input.GetKeyDown(KeyCode.RightArrow) ? new[] {0.0F, fStep, 0.0F} : pMovements,
+            KeyCode.Z => Input.GetKeyDown(KeyCode.LeftArrow) ? new[] {0.0F, 0.0F, -fStep} :
+                Input.GetKeyDown(KeyCode.RightArrow) ? new[] {0.0F, 0.0F, fStep} : pMovements,
+            _ => pMovements
+        };
+        if (pMovements.EqualByElement(new[] {0.0F, 0.0F, 0.0F})) yield break;
+        CartesianPoint pMoveVector = new CartesianPoint("movements", nFrameCount, pMovements);
+        if (bTrace)
+        {
+            CartesianPoint pTargetVector = CartesianPos + pMoveVector;
+            Debug.Log($"[REF]Movement=({pMoveVector.X:F3},{pMoveVector.Y:F3},{pMoveVector.Z:F3})," +
+                      $"Target=({pTargetVector.X:F5},{pTargetVector.Y:F5},{pTargetVector.Z:F5}), " +
+                      $"Curr=({CartesianPos.X:F5},{CartesianPos.Y:F5},{CartesianPos.Z:F5})");
+        }
+
+        yield return StartCoroutine(MoveAbsoluteJoints(JointPos + pMoveVector));
     }
 
     private void InitRobot()
@@ -162,11 +199,9 @@ public class RobotController : MonoBehaviour
             GameObject pPart = joints[i].robotPart;
             JointController pJoint = pPart.GetComponent<JointController>();
             if (pJoint is null) continue;
-            pJoint.Index = i;
-            pJoint.Name = joints[i].inputAxis;
-            pJoint.SpeedMode = eMode;
             pJoint.OnMoveEvent += OnJointMoveEvent;
             pJoint.OnStopEvent += OnJointStopEvent;
+            pJoint.SpeedMode = eMode;
             pJoint.FrameCount = nFrameCount;
             pJoint.TargetPosition = pTargetPositions[i];
             pJoint.UpdateParameter();

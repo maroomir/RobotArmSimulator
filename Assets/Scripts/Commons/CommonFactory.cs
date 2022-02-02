@@ -57,12 +57,21 @@ public static class CommonFactory
         return false;
     }
 
-    public static KeyCode GetInputKeys(IEnumerable<KeyCode> pObserves)
+    public static KeyCode GetInputKey(IEnumerable<KeyCode> pObserves)
     {
         foreach (KeyCode eKey in pObserves)
             if (Input.GetKey(eKey))
                 return eKey;
         return KeyCode.None;
+    }
+
+    public static KeyCode[] GetInputKeys(IEnumerable<KeyCode> pObserves)
+    {
+        List<KeyCode> pResult = new List<KeyCode>();
+        foreach (KeyCode eKey in pObserves)
+            if (Input.GetKey(eKey))
+                pResult.Add(eKey);
+        return pResult.ToArray();
     }
 
     public static float[] AddByElement(this float[] pArray1, float[] pArray2)
@@ -79,6 +88,23 @@ public static class CommonFactory
         for (int i = 0; i < pResultArray.Length; i++)
             pResultArray[i] = pArray1[i] - pArray2[i];
         return pResultArray;
+    }
+
+    public static bool EqualByElement(this float[] pArray1, float[] pArray2)
+    {
+        bool bSame = true;
+        for (int i = 0; i < pArray1.Length; i++)
+            if (Math.Abs(pArray1[i] - pArray2[i]) > 0.0001F)
+                bSame = false;
+
+        return bSame;
+    }
+
+    public static float[] FillAll(this float[] pArray, float fValue)
+    {
+        for (int i = 0; i < pArray.Length; i++)
+            pArray[i] = fValue;
+        return pArray;
     }
 
     public static GameObject[] Grouping(this GameObject[] pArray1, GameObject[] pArray2)

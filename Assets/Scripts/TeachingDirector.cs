@@ -30,6 +30,15 @@ public class TeachingDirector : MonoBehaviour
         _pRobotControl.ControlMode = OperationMode.Teaching;
         _pListPoints = new List<ITeachingPoint>();
         _strTeachingRoot = Path.Combine(Directory.GetCurrentDirectory(), "Teaching");
+        InitCommons();
+    }
+
+    private void InitCommons()
+    {
+        GameObject[] pBaseObjects = {robot};
+        GameObject[] pRobotObjects = _pRobotControl.joints.Select(pObj => pObj.robotPart).ToArray();
+        GameObject[] pTotalObjects = pBaseObjects.Grouping(pRobotObjects);
+        CommonFactory.RobotKinematics = new KinematicsCalculator(pTotalObjects);
     }
     
     // Update is called on every frames
