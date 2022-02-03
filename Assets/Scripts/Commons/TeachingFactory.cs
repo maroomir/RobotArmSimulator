@@ -2,12 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
-using TMPro.SpriteAssetUtilities;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class JointPoint : ITeachingPoint
 {
@@ -222,16 +218,23 @@ public static class TeachingFactory
             return;
         }
 
-        using (StreamWriter pWriter = new StreamWriter(strPath))
-        {
-            JsonSerializer pSerializer = new JsonSerializer();
-            pSerializer.Serialize(pWriter, pPoints);
-        }
+        using StreamWriter pWriter = new StreamWriter(strPath);
+        JsonSerializer pSerializer = new JsonSerializer();
+        pSerializer.Serialize(pWriter, pPoints);
     }
 
-    public static JointPoint[] LoadTeachingPoints(string strPath)
+    public static Dictionary<string, JointPoint> LoadTeachingPoints(string strPath)
     {
-        throw new NotSupportedException();
+        if (!CommonFactory.VerifyFilePath(strPath))
+        {
+            Debug.LogWarning("Failed to save the file");
+            return null;
+        }
+
+        using TextReader pTextReader = new StreamReader(strPath);
+        JsonReader pJsonReader = new JsonTextReader(pTextReader);
+        JsonSerializer pSerializer = new JsonSerializer();
+        return pSerializer.Deserialize<Dictionary<string, JointPoint>>(pJsonReader);
     }
 
     public static CartesianPoint ToCartesianPoint(this JointPoint pSourcePoint, KinematicsCalculator pCalculator)
