@@ -72,7 +72,7 @@ public class JointPoint : ITeachingPoint
         string strResult = "";
         for (int i = 0; i < AxisNum; i++)
         {
-            strResult += $"J{i:D1}:{Values[i]:F2}";
+            strResult += $"J{i + 1:D1}:{Values[i]:F2}";
             if (i < AxisNum - 1) strResult += ",";
         }
 
@@ -123,12 +123,12 @@ public class CartesianPoint : ITeachingPoint
     public Vector3 Rotation =>
         (Values.Length >= 6) ? new Vector3(Values[3], Values[4], Values[5]) : new Vector3(0.0F, 0.0F, 0.0F);
 
-    public float X => Values[0];
-    public float Y => Values[1];
-    public float Z => Values[2];
-    public float RX => Values[3];
-    public float RY => Values[4];
-    public float RZ => Values[5];
+    public float X => (Values.Length >= 3) ? Values[0] : 0.0F;
+    public float Y => (Values.Length >= 3) ? Values[1] : 0.0F;
+    public float Z => (Values.Length >= 3) ?  Values[2] : 0.0F;
+    public float RX => (Values.Length >= 6) ? Values[3] : 0.0F;
+    public float RY => (Values.Length >= 6) ? Values[4] : 0.0F;
+    public float RZ => (Values.Length >= 6) ? Values[5] : 0.0F;
 
     public CartesianPoint(string strName)
     {
@@ -174,6 +174,21 @@ public class CartesianPoint : ITeachingPoint
         AxisNum = AxisNum,
         Values = Values.Clone() as float[]
     };
+
+    public void Trim(TrimMode eMode)
+    {
+        for (int i = 0; i < AxisNum; i++)
+        {
+            Values[i] = eMode switch
+            {
+                TrimMode.Integer => (int)Values[i] * 1.0F,
+                TrimMode.Binary => (int)(Values[i] / 2.0F) * 2.0F,
+                TrimMode.Pentagram => (int)(Values[i] / 5.0F) * 5.0F,
+                TrimMode.Decimal => (int)(Values[i] / 10.0F) * 10.0F,
+                _ => Values[i]
+            };
+        }
+    }
 
     public string Print()
     {

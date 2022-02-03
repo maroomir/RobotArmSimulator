@@ -12,12 +12,13 @@ public interface ISpeedControl
 
 public interface ITeachingPoint
 {
-    public string Name { get; }
+    public string Name { get; set; }
     public int AxisNum { get; }
     public int FrameCount { get; set; }
     public float[] Values { get; }
 
     public ITeachingPoint Clone();
+    public void Trim(TrimMode eMode);
     public string Print();
 }
 

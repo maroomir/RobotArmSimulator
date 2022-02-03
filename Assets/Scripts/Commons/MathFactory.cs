@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class KinematicsCalculator
 {
@@ -121,7 +122,8 @@ public class KinematicsCalculator
         for (int i = 0; i < _nMaxIterCount; i++)
         {
             for (int j = 0; j < Length; j++)
-                pResults[j] -= (float) PartialGradient(pInput, j, pResults);
+                pResults[j] -= (float)PartialGradient(pInput, j, pResults);
+
             if (PartialDistance(pInput, pResults) <= _fThreshold)
                 break;
             if(i == _nMaxIterCount - 1)
