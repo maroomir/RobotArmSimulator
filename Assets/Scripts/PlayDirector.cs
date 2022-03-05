@@ -47,7 +47,7 @@ public class PlayDirector : MonoBehaviour
         foreach (ScriptInfo pScript in _pListScripts)
         {
             _pDisplayLog.text = $"{pScript.order}:{pScript.name}";
-            StartCoroutine(RunScript(pScript));
+            yield return RunScript(pScript);
         }
     }
 
