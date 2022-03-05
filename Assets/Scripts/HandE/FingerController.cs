@@ -11,6 +11,7 @@ public class FingerController : MonoBehaviour, IMotorControl
     public float TargetPosition { get; private set; }
     public SpeedRule SpeedMode { get; set; }
     public BreakStatus Break { get; set; }
+    public FingerStatus Status { get; private set; }
 
     public event MoterMoveCallback OnMoveEvent;
     public event MoterMoveCallback OnStopEvent;
@@ -51,12 +52,14 @@ public class FingerController : MonoBehaviour, IMotorControl
     public void Open()
     {
         TargetPosition = _fOpenPos;
+        Status = FingerStatus.Open;
         UpdateParameter();
     }
 
     public void Close()
     {
         TargetPosition = _fClosedPos;
+        Status = FingerStatus.Close;
         UpdateParameter();
     }
 

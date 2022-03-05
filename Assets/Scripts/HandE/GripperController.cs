@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -19,6 +20,9 @@ public class GripperController : MonoBehaviour
     public int FrameCount { get; private set; } = 10;
     
     public Vector3 EndPoint { get; }
+    
+    public OperationMode ControlMode { get; set; }
+    public FingerStatus Status => fingers[0].robotPart.GetComponent<FingerController>().Status;
 
     private bool[] _pFingerStatusFlag;
     
@@ -26,6 +30,20 @@ public class GripperController : MonoBehaviour
     private void Start()
     {
         _pFingerStatusFlag = new bool[fingers.Length];
+    }
+
+    private void Update()
+    {
+        if (ControlMode != OperationMode.Teaching) return;
+        switch (CommonFactory.GetInputKeyDown(new[] {KeyCode.G, KeyCode.R}))
+        {
+            case KeyCode.G:
+                StartCoroutine(Close());
+                break;
+            case KeyCode.R:
+                StartCoroutine(Open());
+                break;
+        }
     }
 
     private void OnFingerMoveEvent(object sender, MoterEventArgs e)
@@ -59,6 +77,20 @@ public class GripperController : MonoBehaviour
             if(pFinger == null) continue;
             pFinger.OnMoveEvent -= OnFingerMoveEvent;
             pFinger.OnStopEvent -= OnFingerStopEvent;
+        }
+    }
+
+    public IEnumerator Do(FingerStatus eStatus)
+    {
+        if(eStatus == Status) yield break;
+        switch (eStatus)
+        {
+            case FingerStatus.Close:
+                yield return Close();
+                break;
+            case FingerStatus.Open:
+                yield return Open();
+                break;
         }
     }
 

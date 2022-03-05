@@ -16,6 +16,7 @@ public interface ITeachingPoint
     public int AxisNum { get; }
     public int FrameCount { get; set; }
     public float[] Values { get; }
+    public FingerStatus GripStatus { get; set; }
 
     public ITeachingPoint Clone();
     public void Trim(TrimMode eMode);

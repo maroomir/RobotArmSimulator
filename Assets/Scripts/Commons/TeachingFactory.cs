@@ -11,7 +11,8 @@ public class JointPoint : ITeachingPoint
     public int AxisNum { get; private set; }
     public int FrameCount { get; set; }
     public float[] Values { get; private set; }
-    
+    public FingerStatus GripStatus { get; set; }
+
     public JointPoint(string strName)
     {
         Name = strName;
@@ -112,6 +113,7 @@ public class CartesianPoint : ITeachingPoint
     public int AxisNum { get; private set; }
     public int FrameCount { get; set; }
     public float[] Values { get; private set; }
+    public FingerStatus GripStatus { get; set; }
 
     public Vector3 Position =>
         (Values.Length >= 3) ? new Vector3(Values[0], Values[1], Values[2]) : new Vector3(0.0F, 0.0F, 0.0F);

@@ -17,6 +17,12 @@ public enum BreakStatus
     Hold,
 }
 
+public enum FingerStatus
+{
+    Open = 0,
+    Close,
+}
+
 public enum TrimMode
 {
     Integer = 0,
