@@ -7,6 +7,7 @@ public static class CommonFactory
 {
     public static KinematicsCalculator RobotKinematics { get; set; }
     
+    // https://github.com/maroomir/YoonFactory.Net/blob/master/YoonFile/FileFactory.cs
     public static bool VerifyDirectory(string strPath)
     {
         if (string.IsNullOrEmpty(strPath)) return false;
@@ -22,6 +23,7 @@ public static class CommonFactory
         return false;
     }
 
+    // https://github.com/maroomir/YoonFactory.Net/blob/master/YoonFile/FileFactory.cs
     public static bool VerifyFilePath(string strPath, bool bCreateFile = true)
     {
         if (string.IsNullOrEmpty(strPath)) return false;
@@ -47,6 +49,14 @@ public static class CommonFactory
         }
 
         return false;
+    }
+
+    // https://github.com/maroomir/YoonFactory.Net/blob/master/YoonFile/FileFactory.cs
+    public static bool VerifyFileExtension(string strPath, string strExt, bool bCreateFile = true)
+    {
+        if (!VerifyFilePath(strPath, bCreateFile)) return false;
+        FileInfo pFile = new FileInfo(strPath);
+        return string.Equals(pFile.Extension, strExt, StringComparison.CurrentCultureIgnoreCase);
     }
     
     public static bool IsInputKeys(IEnumerable<KeyCode> pObserves)

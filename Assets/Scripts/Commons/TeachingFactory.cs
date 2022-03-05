@@ -8,10 +8,17 @@ using UnityEngine;
 public class JointPoint : ITeachingPoint
 {
     public string Name { get; set; }
-    public int AxisNum { get; private set; }
+    public int AxisNum { get; set; } 
     public int FrameCount { get; set; }
-    public float[] Values { get; private set; }
+    public float[] Values { get; set; }
     public FingerStatus GripStatus { get; set; }
+
+    public JointPoint()
+    {
+        // https://stackoverflow.com/questions/31069962
+        // Need to have an empty constructor in JointPoint class in order to deserialize it
+        Debug.Log("Serialize json file to use Newtonsoft.Json");
+    }
 
     public JointPoint(string strName)
     {
@@ -110,9 +117,9 @@ public class JointPoint : ITeachingPoint
 public class CartesianPoint : ITeachingPoint
 {
     public string Name { get; set; }
-    public int AxisNum { get; private set; }
+    public int AxisNum { get; set; }
     public int FrameCount { get; set; }
-    public float[] Values { get; private set; }
+    public float[] Values { get; set; }
     public FingerStatus GripStatus { get; set; }
 
     public Vector3 Position =>
@@ -128,6 +135,14 @@ public class CartesianPoint : ITeachingPoint
     public float RY => (Values.Length >= 6) ? Values[4] : 0.0F;
     public float RZ => (Values.Length >= 6) ? Values[5] : 0.0F;
 
+    
+    public CartesianPoint()
+    {
+        // https://stackoverflow.com/questions/31069962
+        // Need to have an empty constructor in CartesianPoint class in order to deserialize it
+        Debug.Log("Serialize json file to use Newtonsoft.Json");
+    }
+    
     public CartesianPoint(string strName)
     {
         Name = strName;

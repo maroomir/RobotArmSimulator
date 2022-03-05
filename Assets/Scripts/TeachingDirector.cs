@@ -23,6 +23,9 @@ public class TeachingDirector : MonoBehaviour
     
     private IEnumerator ReplayScript()
     {
+        _pDisplayLog.text = "Run Replay Script";
+        yield return new WaitForSeconds(1);
+        _pDisplayLog.text = "Home position";
         yield return HomeScript();
         foreach(JointPoint pPoint in _pDicPoints.Values)
         {
@@ -105,6 +108,7 @@ public class TeachingDirector : MonoBehaviour
                 break;
             case PlayMode.Teach:
                 _pRobotControl.ControlMode = OperationMode.Teaching;
+                _pGripperControl.ControlMode = OperationMode.Teaching;
                 _pDisplayLog.text = $"Teaching Mode [{_pRobotControl.JointPos.Print()}]";
                 break;
             case PlayMode.Save:
@@ -131,6 +135,7 @@ public class TeachingDirector : MonoBehaviour
                 break;
             case PlayMode.Home:
                 _pRobotControl.ControlMode = OperationMode.Auto;
+                _pGripperControl.ControlMode = OperationMode.Auto;
                 _pDisplayLog.text = "Run Home Script";
                 StartCoroutine(HomeScript());
                 // Move the job flag to prevent overload
@@ -138,12 +143,12 @@ public class TeachingDirector : MonoBehaviour
                 break;
             case PlayMode.Replay:
                 _pRobotControl.ControlMode = OperationMode.Auto;
+                _pGripperControl.ControlMode = OperationMode.Auto;
                 if (_pDicPoints.Count > 0)
                 {
                     string strFilePath = Path.Combine(_strTeachingRoot, "Points.json");
                     TeachingFactory.SaveTeachingPoints(_pDicPoints, strFilePath);
                 }
-                _pDisplayLog.text = "Run Replay Script";
                 StartCoroutine(ReplayScript());
                 // Move the job flag to prevent overload
                 _eUpdateMode = PlayMode.Wait;

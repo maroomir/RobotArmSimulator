@@ -103,6 +103,7 @@ public class SampleDirector : MonoBehaviour
         _pGripperControl = gripper.GetComponent<GripperController>();
         _nAxisNum = _pRobotControl.joints.Length;
         _pRobotControl.ControlMode = OperationMode.Auto;
+        _pGripperControl.ControlMode = OperationMode.Auto;
         InitCommons();
 
         //StartCoroutine(TechnoMotionScript());

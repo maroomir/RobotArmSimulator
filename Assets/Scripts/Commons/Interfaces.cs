@@ -12,10 +12,12 @@ public interface ISpeedControl
 
 public interface ITeachingPoint
 {
+    // Need to public setter in order to use Newtonsoft.Json
+    // https://stackoverflow.com/questions/31069962
     public string Name { get; set; }
-    public int AxisNum { get; }
+    public int AxisNum { get; set; }
     public int FrameCount { get; set; }
-    public float[] Values { get; }
+    public float[] Values { get; set; }
     public FingerStatus GripStatus { get; set; }
 
     public ITeachingPoint Clone();
