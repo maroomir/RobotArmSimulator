@@ -34,9 +34,11 @@ Motion Script는 Robot의 동작을 지정하는 Script로서 이를 통해 Robo
         yield return _pGripperControl.Open();
     }
 ```
+위 Script를 실행하면 아래처럼 Robot이 동작합니다.
 
-아래의 특징에 유념한다면 간단한 Motion Script를 쉽게 작성할 수 있습니다.
-단, Motion Script를 제대로 작성하려면 협동로봇(Universal Robotics, TechMan)에 대한 이해가 필요합니다.
+![techno_motion.gif](ScreenShots/techno_motion.gif)
+
+몇가지 특징에 유념한다면 간단한 Motion Script를 쉽게 작성할 수 있습니다.
 
 - Motion Script는 Coroutine으로 구현되어있습니다. 따라서 반드시 IEnumerator 형 함수로 작성해야합니다.
 - 현재 구현 능력의 부족함으로 Rally Point는 Joint 좌표로만 작성합니다. 다만 Rally Point을 기준으로 한 상대적인 움직임은 X, Y, Z 좌표로 지정할 수 있습니다.
@@ -52,13 +54,16 @@ TeachingDirector를 통해 지정된 Pose들은 JointPoint 형태로 변환되�
 Robot Arm는 Keyboard 입력으로 조작이 가능합니다. 사용하는 Key 및 조합에 대해 아래에 적어두겠습니다.
 
 #### 숫자 1 ~ 7 + 화살표 Key
+![joint_move.gif](ScreenShots/joint_move.gif)
 각 Joint를 이동시키기 위한 Key 조합입니다. 왼쪽/위쪽 화살표 Key는 Robot의 Joint를 - 방향으로 회전시킵니다. 오른쪽/아래쪽 화살표 Key는 Robot의 Joint를 + 방향으로 회전시킵니다.
 
 #### C + 화살표 Key
+![camera_move.gif](ScreenShots/camera_move.gif)
 Camera를 이동시키기 위한 Key 조합입니다. Robot이 서있는 위치를 기준으로 화살표 방향에 맞게 Camera가 회전합니다.
-Robot의 Tool 위치를 Tracking 하거나, 간섭을 피하면서 Pose를 지정하기 위해 필수로 사용합니다.
+Robot의 Tool 위치를 Tracking 하거나, 간섭을 피하면서 Pose를 지정하기 위해 사용합니다.
 
 #### R, G Key
+![gripper_move.gif](ScreenShots/gripper_move.gif)
 Gripper를 Release(R) 하거나 Grip(G) 하기 위해 사용하는 Gripper 조작 Key입니다.
 
 #### Spacebar Key
@@ -73,8 +78,16 @@ Robot Arm을 직립 상태인 영점(0), 또는 Home(H) 위치로 이동시킵�
 #### Shift + R
 현재까지 저장된 Pose들을 재생(Replay)해서 확인할 수 있습니다. Robot Arm은 가장 먼저 Home 위치로 이동한 다음에 저장된 위치값대로 차례대로 Pose를 취합니다.
 
-## 주의사항
-1. 시중에 존재하는 협동로봇에 비해 기능상으로 제약이 많습니다. 아직 Unity와 Robot 제어에 대한 이해가 부족하기 때문에 Cartesian 좌표와 Tool Center Point 이동을 구현하지는 못했습니다. 이런 점들은 천천히 공부하면서 구현하도록 하겠습니다.
+#### ESC Key
+재생 Mode, Pose 저장 등 다른 Job 상태에서 Teaching Mode로 돌아가기 위해 사용합니다.
+
+### [PlayDirector](https://github.com/maroomir/RobotArmSimulator/blob/master/Assets/Scripts/PlayDirector.cs)
+PlayDirector는 Teaching으로 저장된 Point들을 실제로 돌려보기 위해 만들어진 Test 전용 Job입니다.
+PlayDirector에 검증을 원하는 .json 파일을 삽입하면, 번호 순서대로 로봇에서 Job을 실행합니다.
+이를 통해 지정한 Pose들을 검토해보고, 실제 Motion Script를 작성할 때 참고할 수 있습니다.
+
+## 사용 전 주의사항
+아직 Unity와 Robot 제어에 대한 이해가 부족해서 시중에 판매하는 협동로봇보다 부족한 점이 많습니다. 이런 점들은 천천히 공부하면서 구현하도록 하겠습니다.
 
 ## 참고
 RobotArm의 Resource는 Unity에서 공개한 [articulations-robot-demo](https://github.com/Unity-Technologies/articulations-robot-demo) 에 포함된 [UR3](https://www.universal-robots.com/products/ur3-robot/) 와 [HandE](https://robotiq.com/products/hand-e-adaptive-robot-gripper) 를 가져왔습니다.

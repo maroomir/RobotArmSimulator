@@ -656,17 +656,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 966725216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7a63f53ef4b742c0b93fc87e8b9ffbb, type: 3}
+  m_Script: {fileID: 11500000, guid: e2cda51cf1cbeb644833b1204e691062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scripts:
-  - order: 1
-    name: grip_spoon.json
-  - order: 0
-    name: Points.json
   robot: {fileID: 4140136056455461650}
   gripper: {fileID: 1372448744}
   logger: {fileID: 55525017}
+  trimMode: 0
 --- !u!1 &1372448744 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4457492062874840620, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}

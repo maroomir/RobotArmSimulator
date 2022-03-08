@@ -106,8 +106,8 @@ public class SampleDirector : MonoBehaviour
         _pGripperControl.ControlMode = OperationMode.Auto;
         InitCommons();
 
-        //StartCoroutine(TechnoMotionScript());
-        StartCoroutine(GripperRotateMotionScript());
+        StartCoroutine(TechnoMotionScript());
+        //StartCoroutine(GripperRotateMotionScript());
         //StartCoroutine(KinematicsTestScript());
     }
 
