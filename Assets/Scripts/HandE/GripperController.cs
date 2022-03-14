@@ -18,9 +18,17 @@ public class GripperController : MonoBehaviour
 
     public bool IsGripperActivate { get; private set; }
     public int FrameCount { get; private set; } = 10;
-    
-    public Vector3 EndPoint { get; }
-    
+
+    public Vector3 EndPoint
+    {
+        get
+        {
+            Vector3 pStartPos = fingers[0].robotPart.GetComponent<FingerController>().GlobalPosition;
+            Vector3 pEndPos = fingers[1].robotPart.GetComponent<FingerController>().GlobalPosition;
+            return Vector3.Lerp(pStartPos, pEndPos, 0.5F);
+        }
+    }
+
     public OperationMode ControlMode { get; set; }
     public FingerStatus Status => fingers[0].robotPart.GetComponent<FingerController>().Status;
 

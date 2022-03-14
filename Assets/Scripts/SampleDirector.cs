@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Linq;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 
 public class SampleDirector : MonoBehaviour
 {
     public GameObject robot;
     public GameObject gripper;
+    public GameObject logger;
 
     private RobotController _pRobotControl;
     private GripperController _pGripperControl;
+    private TextMeshProUGUI _pDisplayLog;
     private int _nAxisNum;
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -104,11 +107,20 @@ public class SampleDirector : MonoBehaviour
         _nAxisNum = _pRobotControl.joints.Length;
         _pRobotControl.ControlMode = OperationMode.Auto;
         _pGripperControl.ControlMode = OperationMode.Auto;
+        _pDisplayLog = logger.GetComponent<TextMeshProUGUI>();
+        _pDisplayLog.text = "Run Sample Script";
         InitCommons();
 
         StartCoroutine(TechnoMotionScript());
         //StartCoroutine(GripperRotateMotionScript());
         //StartCoroutine(KinematicsTestScript());
+    }
+    
+    // Update is called on every frames
+    private void Update()
+    {
+        _pDisplayLog.text =
+            $"End Point X={_pGripperControl.EndPoint.x:F4}, Y={_pGripperControl.EndPoint.y:F4}, Z={_pGripperControl.EndPoint.z:F4}";
     }
 
     private void InitCommons()

@@ -12,6 +12,7 @@ public class FingerController : MonoBehaviour, IMotorControl
     public SpeedRule SpeedMode { get; set; }
     public BreakStatus Break { get; set; }
     public FingerStatus Status { get; private set; }
+    public Vector3 GlobalPosition => transform.position;
 
     public event MoterMoveCallback OnMoveEvent;
     public event MoterMoveCallback OnStopEvent;
