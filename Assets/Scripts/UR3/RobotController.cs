@@ -205,6 +205,7 @@ public class RobotController : MonoBehaviour
             JointController pJoint = pPart.GetComponent<JointController>();
             if (pJoint is null) continue;
             pJoint.ControlMode = OperationMode.Forced;
+            pJoint.Break = BreakStatus.Release;
             pJoint.ForcedUpdate(pTargetPositions[i]);
         }
     }
