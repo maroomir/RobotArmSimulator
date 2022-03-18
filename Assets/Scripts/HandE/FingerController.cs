@@ -72,6 +72,26 @@ public class FingerController : MonoBehaviour, IMotorControl
         Break = BreakStatus.Release;
     }
 
+    public void ForcedUpdate(float fPosition, float fOffset = 0.0F)
+    {
+        if (Break == BreakStatus.Hold)
+        {
+            _fOperatedPos = CurrentPosition;
+            return;
+        }
+
+        ArticulationDrive pDrive = _pArticulation.xDrive;
+        if (fOffset != 0.0F)
+        {
+            if (Mathf.Abs(fPosition - pDrive.target) > fOffset)
+                fPosition = (fPosition > pDrive.target) ? fPosition + fOffset : fPosition - fOffset;
+        }
+
+        _fOperatedPos = fPosition;
+        pDrive.target = _fOperatedPos;
+        _pArticulation.xDrive = pDrive;
+    }
+
     // Update is called on fixed frequency
     private void FixedUpdate()
     {

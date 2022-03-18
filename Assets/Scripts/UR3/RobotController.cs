@@ -162,6 +162,18 @@ public class RobotController : MonoBehaviour
         Debug.Log($"[STOP] Joint={pObject.Name} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
     }
 
+    public void ForcedMove(ITeachingPoint pTarget)
+    {
+        ControlMode = OperationMode.Forced;
+        switch (pTarget)
+        {
+            case JointPoint pJointPosition:
+                RotatedJointsForced(pJointPosition.Values);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(pTarget), pTarget, null);
+        }
+    }
 
     public IEnumerator Move(ITeachingPoint pTarget)
     {
@@ -180,6 +192,21 @@ public class RobotController : MonoBehaviour
     public IEnumerator MoveAbsoluteJoints(JointPoint pTargetPoint)
     {
         yield return StartCoroutine(RotateJoints(pTargetPoint.Values, pTargetPoint.FrameCount));
+    }
+
+    private void RotatedJointsForced(float[] pTargetPositions)
+    {
+        if (joints?.Length != pTargetPositions.Length) return;
+        if (pTargetPositions.SequenceEqual(JointPos.Values))
+            return;
+        for (int i = 0; i < joints.Length; i++)
+        {
+            GameObject pPart = joints[i].robotPart;
+            JointController pJoint = pPart.GetComponent<JointController>();
+            if (pJoint is null) continue;
+            pJoint.ControlMode = OperationMode.Forced;
+            pJoint.ForcedUpdate(pTargetPositions[i]);
+        }
     }
 
     // ReSharper disable Unity.PerformanceAnalysis

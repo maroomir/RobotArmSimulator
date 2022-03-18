@@ -40,6 +40,7 @@ public interface IMotorControl
 
     public void SetLimit(float fLimit1, float fLimit2);
     public void UpdateParameter();
+    public void ForcedUpdate(float fPosition, float fOffset);
 }
 
 public delegate void MoterMoveCallback(object sender, MoterEventArgs e);

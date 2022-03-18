@@ -1,7 +1,8 @@
 public enum OperationMode
 {
     Teaching = 0,
-    Auto
+    Auto,
+    Forced,
 }
 
 public enum SpeedRule
