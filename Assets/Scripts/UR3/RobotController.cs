@@ -58,6 +58,8 @@ public class RobotController : MonoBehaviour
 
     public OperationMode ControlMode { get; set; }
 
+    public event CollisionCallback OnCollisionEnterEvent;
+
     private bool[] _pJointStatusFlags;
 
     // Start is called before the first frame update
@@ -71,6 +73,7 @@ public class RobotController : MonoBehaviour
             if (pJoint is null) continue;
             pJoint.Index = i;
             pJoint.Name = joints[i].inputAxis;
+            pJoint.OnCollisionEnterEvent += OnJointCollisionEvent;
         }
     }
 
@@ -160,6 +163,11 @@ public class RobotController : MonoBehaviour
         JointController pObject = (JointController)sender;
         _pJointStatusFlags[pObject.Index] = false;
         Debug.Log($"[STOP] Joint={pObject.Name} CurrentPos={e.CurrentPosition:F2} Speed={e.Speed:F2}");
+    }
+
+    private void OnJointCollisionEvent(object sender, CollisionEventArgs e)
+    {
+        OnCollisionEnterEvent?.Invoke(this, e);
     }
 
     public void ForcedMove(ITeachingPoint pTarget)

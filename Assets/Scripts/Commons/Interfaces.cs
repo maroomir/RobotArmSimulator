@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public interface ISpeedControl
 {
@@ -37,6 +38,8 @@ public interface IMotorControl
     public BreakStatus Break { get; set; }
     public event MoterMoveCallback OnMoveEvent;
     public event MoterMoveCallback OnStopEvent;
+    public event CollisionCallback OnCollisionEnterEvent;
+    public event CollisionCallback OnCollisionLeaveEvent;
 
     public void SetLimit(float fLimit1, float fLimit2);
     public void UpdateParameter();
@@ -58,5 +61,21 @@ public class MoterEventArgs : EventArgs
         CurrentPosition = fCurr;
         TargetPosition = fTarget;
         Speed = fSpeed;
+    }
+}
+
+public delegate void CollisionCallback(object sender, CollisionEventArgs e);
+
+public class CollisionEventArgs : EventArgs
+{
+    public string SelfName { get; set; }
+    public string ObjectName { get; set; }
+    public string ObjectTag { get; set; }
+
+    public CollisionEventArgs(string strSelfName, GameObject pObject)
+    {
+        SelfName = strSelfName;
+        ObjectName = pObject.name;
+        ObjectTag = pObject.tag;
     }
 }

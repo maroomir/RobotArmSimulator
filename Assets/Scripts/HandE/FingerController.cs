@@ -16,6 +16,8 @@ public class FingerController : MonoBehaviour, IMotorControl
 
     public event MoterMoveCallback OnMoveEvent;
     public event MoterMoveCallback OnStopEvent;
+    public event CollisionCallback OnCollisionEnterEvent;
+    public event CollisionCallback OnCollisionLeaveEvent;
 
     private ArticulationBody _pArticulation;
     private int _nCurrFrame;
@@ -116,5 +118,16 @@ public class FingerController : MonoBehaviour, IMotorControl
         pDrive.target = _fOperatedPos;
         _pArticulation.zDrive = pDrive;
         _nCurrFrame += 1;
+    }
+    
+    public void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log($"[COLLISION] Collision between {name} and {collision.gameObject.name}");
+        OnCollisionEnterEvent?.Invoke(this, new CollisionEventArgs(name, collision.gameObject));
+    }
+
+    public void OnCollisionExit(Collision other)
+    {
+        OnCollisionLeaveEvent?.Invoke(this, new CollisionEventArgs(name, other.gameObject));
     }
 }

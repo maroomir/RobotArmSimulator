@@ -40,7 +40,12 @@ public class TeachingDirector : MonoBehaviour
         JointPoint pHomePos = JointPoint.Home();
         yield return _pRobotControl.Move(pHomePos);
     }
-    
+
+    public void OnCollisionRobotEvent(object sender, CollisionEventArgs e)
+    {
+        _pDisplayLog.text = $"Collision between {e.SelfName} and {e.ObjectName}";
+    }
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -48,6 +53,7 @@ public class TeachingDirector : MonoBehaviour
         _pGripperControl = gripper.GetComponent<GripperController>();
         _pRobotControl.ControlMode = OperationMode.Teaching;
         _pGripperControl.ControlMode = OperationMode.Teaching;
+        _pRobotControl.OnCollisionEnterEvent += OnCollisionRobotEvent;
         _pDicPoints = new Dictionary<string, JointPoint>();
         _strTeachingRoot = Path.Combine(Directory.GetCurrentDirectory(), "Teaching");
         _pDisplayLog = logger.GetComponent<TextMeshProUGUI>();

@@ -16,10 +16,16 @@ public class ForcedDirector : MonoBehaviour
     private TextMeshProUGUI _pDisplayLog;
     private JointPoint _pForcedPoint;
     
+    public void OnCollisionRobotEvent(object sender, CollisionEventArgs e)
+    {
+        _pDisplayLog.text = $"Collision between {e.SelfName} and {e.ObjectName}";
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
         _pRobotControl = robot.GetComponent<RobotController>();
+        _pRobotControl.OnCollisionEnterEvent += OnCollisionRobotEvent;
         _pListJointFields = new List<TMP_InputField>();
         for (int i = 0; i < panel.transform.childCount; i++)
         {
