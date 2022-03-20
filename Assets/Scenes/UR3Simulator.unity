@@ -3157,7 +3157,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc8ad50c41f74f00bce5210c344fdfd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 4140136056455461659}
+  robot: {fileID: 4140136056455461659}
+  gripper: {fileID: 1834873060}
 --- !u!1 &966725216
 GameObject:
   m_ObjectHideFlags: 0
@@ -5026,6 +5027,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1823978510}
   m_CullTransparentMesh: 1
+--- !u!4 &1834873060 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2192237489881278976, guid: b5ea6224d14a848c8b0c004c2c2aec0c, type: 3}
+  m_PrefabInstance: {fileID: 4457492063684577732}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1870703123
 GameObject:
   m_ObjectHideFlags: 0
